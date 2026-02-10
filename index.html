@@ -28,6 +28,7 @@
         body {
             background-color: #f1f5f9;
             color: var(--dark-color);
+            overflow-x: hidden;
         }
 
         .container {
@@ -60,11 +61,12 @@
             font-size: 1.5rem;
             font-weight: bold;
             color: var(--primary-color);
+            text-decoration: none;
         }
 
         .nav-links {
             display: flex;
-            gap: 2rem;
+            gap: 1rem;
         }
 
         .nav-links a {
@@ -88,10 +90,13 @@
             gap: 1rem;
         }
 
+        .mr-1 { margin-right: 0.5rem; }
+
         /* Sidebar Styles */
         .app-container {
             display: flex;
             margin-top: 80px;
+            min-height: calc(100vh - 80px);
         }
 
         .sidebar {
@@ -104,6 +109,7 @@
             box-shadow: 2px 0 10px rgba(0,0,0,0.1);
             padding: 1.5rem;
             overflow-y: auto;
+            transition: transform 0.3s;
         }
 
         .sidebar-menu {
@@ -122,6 +128,10 @@
             transition: all 0.3s;
             color: var(--gray-color);
             text-decoration: none;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
         }
 
         .sidebar-item:hover,
@@ -140,6 +150,7 @@
             margin-left: 250px;
             padding: 2rem;
             min-height: calc(100vh - 80px);
+            background-color: #f1f5f9;
         }
 
         /* Dashboard Cards */
@@ -223,6 +234,11 @@
             color: var(--dark-color);
         }
 
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
         /* Tables */
         .data-table {
             background: white;
@@ -265,6 +281,7 @@
             border-radius: 20px;
             font-size: 0.85rem;
             font-weight: 500;
+            display: inline-block;
         }
 
         .status.paid {
@@ -338,6 +355,13 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
         }
 
         .btn-primary {
@@ -384,6 +408,7 @@
             gap: 1px;
             background-color: var(--border-color);
             border: 1px solid var(--border-color);
+            margin-top: 1rem;
         }
 
         .calendar-day {
@@ -398,6 +423,7 @@
             font-weight: 600;
             text-align: center;
             min-height: auto;
+            padding: 0.75rem;
         }
 
         .day-number {
@@ -464,6 +490,7 @@
             display: flex;
             border-bottom: 1px solid var(--border-color);
             margin-bottom: 1.5rem;
+            flex-wrap: wrap;
         }
 
         .tab {
@@ -471,6 +498,9 @@
             cursor: pointer;
             border-bottom: 3px solid transparent;
             transition: all 0.3s;
+            background: none;
+            border: none;
+            font-size: 1rem;
         }
 
         .tab:hover,
@@ -487,6 +517,26 @@
             display: block;
         }
 
+        /* Attendance Grid */
+        .attendance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .attendance-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Salary Preview */
+        .salary-preview {
+            overflow-x: auto;
+        }
+
         /* Utility Classes */
         .text-center { text-align: center; }
         .text-right { text-align: right; }
@@ -496,9 +546,13 @@
         .mb-1 { margin-bottom: 0.5rem; }
         .mb-2 { margin-bottom: 1rem; }
         .mb-3 { margin-bottom: 1.5rem; }
+        .mt-1 { margin-top: 0.5rem; }
         .mt-2 { margin-top: 1rem; }
         .mt-3 { margin-top: 1.5rem; }
         .w-100 { width: 100%; }
+        .d-none { display: none !important; }
+        .d-flex { display: flex !important; }
+        .d-block { display: block !important; }
 
         /* Responsive */
         @media (max-width: 1024px) {
@@ -508,20 +562,119 @@
             .main-content {
                 margin-left: 200px;
             }
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 768px) {
             .sidebar {
-                display: none;
+                transform: translateX(-100%);
+                width: 280px;
+            }
+            .sidebar.active {
+                transform: translateX(0);
             }
             .main-content {
                 margin-left: 0;
             }
-            .charts-container {
-                grid-template-columns: 1fr;
+            .nav-links {
+                display: none;
             }
-            .form-grid {
-                grid-template-columns: 1fr;
+            .mobile-menu-btn {
+                display: block !important;
+            }
+            .table-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--primary-color);
+        }
+
+        /* Search Box */
+        .search-box {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-color);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 3000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateX(400px);
+            transition: transform 0.3s;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.success { border-left: 4px solid var(--success-color); }
+        .toast.error { border-left: 4px solid var(--danger-color); }
+        .toast.warning { border-left: 4px solid var(--warning-color); }
+
+        /* Print Styles */
+        @media print {
+            .sidebar, .navbar, .btn, .tabs {
+                display: none !important;
+            }
+            .main-content {
+                margin-left: 0 !important;
+                padding: 0 !important;
+            }
+            .card {
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
             }
         }
     </style>
@@ -531,67 +684,71 @@
     <header>
         <div class="container">
             <div class="navbar">
-                <div class="logo">
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <a href="#" class="logo" onclick="navigateTo('dashboard')">
                     <i class="fas fa-calculator"></i>
                     SalaryCalc Pro
-                </div>
+                </a>
                 <div class="nav-links">
-                    <a href="#" class="active">Dashboard</a>
-                    <a href="#employees">Employees</a>
-                    <a href="#attendance">Attendance</a>
-                    <a href="#salary">Salary</a>
-                    <a href="#reports">Reports</a>
+                    <a href="#" onclick="navigateTo('dashboard')" class="active">Dashboard</a>
+                    <a href="#" onclick="navigateTo('employee-management')">Employees</a>
+                    <a href="#" onclick="navigateTo('attendance-tracker')">Attendance</a>
+                    <a href="#" onclick="navigateTo('salary-calculator')">Salary</a>
+                    <a href="#" onclick="navigateTo('reports')">Reports</a>
                 </div>
                 <div class="user-menu">
-                    <span>John Doe</span>
-                    <div class="avatar">
-                        <i class="fas fa-user-circle" style="font-size: 2rem;"></i>
-                    </div>
+                    <span>Admin User</span>
+                    <i class="fas fa-user-circle" style="font-size: 2rem; color: var(--primary-color);"></i>
                 </div>
             </div>
         </div>
     </header>
 
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
     <!-- Main Application -->
     <div class="app-container">
         <!-- Sidebar -->
-        <div class="sidebar">
+        <div class="sidebar" id="sidebar">
             <div class="sidebar-menu">
-                <a href="#" class="sidebar-item active">
+                <button class="sidebar-item active" onclick="navigateTo('dashboard')">
                     <i class="fas fa-home"></i>
                     <span>Dashboard</span>
-                </a>
-                <a href="#employee-management" class="sidebar-item">
+                </button>
+                <button class="sidebar-item" onclick="navigateTo('employee-management')">
                     <i class="fas fa-users"></i>
                     <span>Employee Management</span>
-                </a>
-                <a href="#attendance-tracker" class="sidebar-item">
+                </button>
+                <button class="sidebar-item" onclick="navigateTo('attendance-tracker')">
                     <i class="fas fa-calendar-check"></i>
                     <span>Attendance Tracker</span>
-                </a>
-                <a href="#salary-calculator" class="sidebar-item">
+                </button>
+                <button class="sidebar-item" onclick="navigateTo('salary-calculator')">
                     <i class="fas fa-calculator"></i>
                     <span>Salary Calculator</span>
-                </a>
-                <a href="#payment-processor" class="sidebar-item">
+                </button>
+                <button class="sidebar-item" onclick="navigateTo('payment-processor')">
                     <i class="fas fa-money-bill-wave"></i>
                     <span>Payment Processing</span>
-                </a>
-                <a href="#reports" class="sidebar-item">
+                </button>
+                <button class="sidebar-item" onclick="navigateTo('reports')">
                     <i class="fas fa-chart-bar"></i>
                     <span>Reports & Analytics</span>
-                </a>
-                <a href="#settings" class="sidebar-item">
+                </button>
+                <button class="sidebar-item" onclick="navigateTo('settings')">
                     <i class="fas fa-cog"></i>
                     <span>Settings</span>
-                </a>
+                </button>
             </div>
         </div>
 
         <!-- Main Content -->
-        <div class="main-content">
+        <div class="main-content" id="mainContent">
             <!-- Dashboard -->
-            <div id="dashboard">
+            <div id="dashboard" class="section">
                 <h1 class="mb-3">Dashboard</h1>
                 
                 <!-- Quick Stats Cards -->
@@ -604,7 +761,7 @@
                             <i class="fas fa-ellipsis-h"></i>
                         </div>
                         <h3>Total Employees</h3>
-                        <div class="value">156</div>
+                        <div class="value" id="totalEmployees">156</div>
                         <div class="change">+12% from last month</div>
                     </div>
                     
@@ -616,7 +773,7 @@
                             <i class="fas fa-ellipsis-h"></i>
                         </div>
                         <h3>This Month Salary</h3>
-                        <div class="value">₹7,84,500</div>
+                        <div class="value" id="monthSalary">₹7,84,500</div>
                         <div class="change">+8% from last month</div>
                     </div>
                     
@@ -628,7 +785,7 @@
                             <i class="fas fa-ellipsis-h"></i>
                         </div>
                         <h3>Pending Payments</h3>
-                        <div class="value">5</div>
+                        <div class="value" id="pendingPayments">5</div>
                         <div class="change">₹42,800 total pending</div>
                     </div>
                     
@@ -640,7 +797,7 @@
                             <i class="fas fa-ellipsis-h"></i>
                         </div>
                         <h3>Paid This Month</h3>
-                        <div class="value">151</div>
+                        <div class="value" id="paidEmployees">151</div>
                         <div class="change">₹7,41,700 total paid</div>
                     </div>
                 </div>
@@ -649,12 +806,16 @@
                 <div class="charts-container">
                     <div class="chart-card">
                         <h2>Salary Distribution</h2>
-                        <canvas id="salaryChart" style="height: 300px;"></canvas>
+                        <div class="chart-container">
+                            <canvas id="salaryChart"></canvas>
+                        </div>
                     </div>
                     
                     <div class="chart-card">
                         <h2>Department Wise</h2>
-                        <canvas id="departmentChart" style="height: 300px;"></canvas>
+                        <div class="chart-container">
+                            <canvas id="departmentChart"></canvas>
+                        </div>
                     </div>
                 </div>
 
@@ -662,102 +823,81 @@
                 <div class="data-table">
                     <div class="table-header">
                         <h2>Recent Payments</h2>
-                        <button class="btn btn-primary">
+                        <button class="btn btn-primary" onclick="exportData()">
                             <i class="fas fa-download"></i> Export
                         </button>
                     </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Employee</th>
-                                <th>Card No</th>
-                                <th>Month</th>
-                                <th>Amount</th>
-                                <th>Payment Method</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <strong>Rajesh Kumar</strong><br>
-                                    <small>EMP001</small>
-                                </td>
-                                <td>101</td>
-                                <td>Dec 2025</td>
-                                <td>₹18,500</td>
-                                <td>Bank Transfer</td>
-                                <td><span class="status paid">Paid</span></td>
-                                <td>
-                                    <button class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i></button>
-                                    <button class="btn btn-secondary btn-sm"><i class="fas fa-print"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <strong>Priya Sharma</strong><br>
-                                    <small>EMP002</small>
-                                </td>
-                                <td>102</td>
-                                <td>Dec 2025</td>
-                                <td>₹16,200</td>
-                                <td>Cash</td>
-                                <td><span class="status paid">Paid</span></td>
-                                <td>
-                                    <button class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i></button>
-                                    <button class="btn btn-secondary btn-sm"><i class="fas fa-print"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <strong>Amit Patel</strong><br>
-                                    <small>EMP003</small>
-                                </td>
-                                <td>103</td>
-                                <td>Dec 2025</td>
-                                <td>₹21,000</td>
-                                <td>Cheque</td>
-                                <td><span class="status pending">Pending</span></td>
-                                <td>
-                                    <button class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i></button>
-                                    <button class="btn btn-success btn-sm"><i class="fas fa-check"></i></button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Card No</th>
+                                    <th>Month</th>
+                                    <th>Amount</th>
+                                    <th>Payment Method</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentPaymentsTable">
+                                <!-- Filled by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
-            <!-- Employee Management (Hidden by default) -->
-            <div id="employee-management" style="display: none;">
+            <!-- Employee Management -->
+            <div id="employee-management" class="section d-none">
                 <h1 class="mb-3">Employee Management</h1>
                 
                 <div class="tabs">
-                    <div class="tab active" onclick="openTab('employee-list')">Employee List</div>
-                    <div class="tab" onclick="openTab('add-employee')">Add New Employee</div>
-                    <div class="tab" onclick="openTab('bulk-upload')">Bulk Upload</div>
+                    <button class="tab active" onclick="openTab('employee-list')">Employee List</button>
+                    <button class="tab" onclick="openTab('add-employee')">Add New Employee</button>
+                    <button class="tab" onclick="openTab('bulk-upload')">Bulk Upload</button>
                 </div>
 
                 <div id="employee-list" class="tab-content active">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchEmployee" placeholder="Search employees..." onkeyup="searchEmployees()">
+                    </div>
                     <div class="table-header">
-                        <h2>All Employees</h2>
+                        <h2>All Employees (156)</h2>
                         <div>
-                            <button class="btn btn-secondary mr-1">
+                            <button class="btn btn-secondary mr-1" onclick="filterEmployees()">
                                 <i class="fas fa-filter"></i> Filter
                             </button>
-                            <button class="btn btn-primary">
+                            <button class="btn btn-primary" onclick="openTab('add-employee')">
                                 <i class="fas fa-plus"></i> Add Employee
                             </button>
                         </div>
                     </div>
-                    <!-- Employee table will be loaded here -->
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Card No</th>
+                                    <th>Name</th>
+                                    <th>Gender</th>
+                                    <th>Department</th>
+                                    <th>Hourly Rate</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="employeeTable">
+                                <!-- Filled by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <div id="add-employee" class="tab-content">
                     <div class="form-container">
                         <h2 class="mb-3">Add New Employee</h2>
-                        <form id="employeeForm">
+                        <form id="employeeForm" onsubmit="saveEmployee(event)">
                             <div class="form-grid">
                                 <div class="form-group">
                                     <label for="cardNo">Card Number *</label>
@@ -788,34 +928,144 @@
                                 </div>
                             </div>
                             <div class="form-actions">
-                                <button type="button" class="btn btn-secondary">Cancel</button>
+                                <button type="button" class="btn btn-secondary" onclick="openTab('employee-list')">Cancel</button>
                                 <button type="submit" class="btn btn-primary">Save Employee</button>
                             </div>
                         </form>
                     </div>
                 </div>
+
+                <div id="bulk-upload" class="tab-content">
+                    <div class="form-container">
+                        <h2 class="mb-3">Bulk Upload Employees</h2>
+                        <div class="form-group">
+                            <label>Download Template</label>
+                            <button class="btn btn-secondary w-100" onclick="downloadTemplate()">
+                                <i class="fas fa-download"></i> Download Excel Template
+                            </button>
+                        </div>
+                        <div class="form-group">
+                            <label>Upload Excel File</label>
+                            <input type="file" id="bulkUploadFile" accept=".xlsx,.xls,.csv" class="w-100">
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" onclick="uploadBulkFile()">
+                                <i class="fas fa-upload"></i> Upload and Process
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Salary Calculator (Hidden by default) -->
-            <div id="salary-calculator" style="display: none;">
-                <h1 class="mb-3">Salary Calculator - December 2025</h1>
+            <!-- Attendance Tracker -->
+            <div id="attendance-tracker" class="section d-none">
+                <h1 class="mb-3">Attendance Tracker</h1>
+                
+                <div class="tabs">
+                    <button class="tab active" onclick="openTab('calendar-view')">Calendar View</button>
+                    <button class="tab" onclick="openTab('daily-attendance')">Daily Entry</button>
+                    <button class="tab" onclick="openTab('monthly-summary')">Monthly Summary</button>
+                </div>
+
+                <div id="calendar-view" class="tab-content active">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>December 2025</h3>
+                            <div>
+                                <button class="btn btn-secondary mr-1" onclick="changeMonth(-1)">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button class="btn btn-secondary" onclick="changeMonth(1)">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="calendar" id="attendanceCalendar">
+                            <!-- Generated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <div id="daily-attendance" class="tab-content">
+                    <div class="form-container">
+                        <h2 class="mb-3">Daily Attendance Entry</h2>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="attendanceDate">Date</label>
+                                <input type="date" id="attendanceDate" value="2025-12-15">
+                            </div>
+                            <div class="form-group">
+                                <label for="selectEmployee">Select Employee</label>
+                                <select id="selectEmployee">
+                                    <!-- Filled by JavaScript -->
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="hoursWorked">Hours Worked</label>
+                                <input type="number" id="hoursWorked" step="0.5" min="0" max="24" value="8">
+                            </div>
+                            <div class="form-group">
+                                <label for="overtimeHours">Overtime Hours</label>
+                                <input type="number" id="overtimeHours" step="0.5" min="0" max="12" value="0">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-secondary" onclick="clearAttendanceForm()">Clear</button>
+                            <button class="btn btn-primary" onclick="saveAttendance()">Save Attendance</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="monthly-summary" class="tab-content">
+                    <div class="data-table">
+                        <div class="table-header">
+                            <h2>Monthly Attendance Summary - December 2025</h2>
+                            <button class="btn btn-primary" onclick="exportAttendance()">
+                                <i class="fas fa-download"></i> Export
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Employee</th>
+                                        <th>Card No</th>
+                                        <th>Total Days</th>
+                                        <th>Regular Hours</th>
+                                        <th>Overtime Hours</th>
+                                        <th>Absent Days</th>
+                                        <th>Attendance %</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="attendanceSummary">
+                                    <!-- Filled by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Salary Calculator -->
+            <div id="salary-calculator" class="section d-none">
+                <h1 class="mb-3">Salary Calculator</h1>
                 
                 <div class="card mb-3">
                     <div class="form-grid">
                         <div class="form-group">
                             <label>Select Month</label>
-                            <input type="month" value="2025-12">
+                            <input type="month" id="salaryMonth" value="2025-12" onchange="loadSalaryData()">
                         </div>
                         <div class="form-group">
                             <label>Calculation Rules</label>
-                            <select>
-                                <option>Standard (8 hrs regular, 1.5x OT)</option>
-                                <option>Custom Rules</option>
+                            <select id="calculationRules">
+                                <option value="standard">Standard (8 hrs regular, 1.5x OT)</option>
+                                <option value="custom">Custom Rules</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label>&nbsp;</label>
-                            <button class="btn btn-primary w-100">
+                            <button class="btn btn-primary w-100" onclick="calculateAllSalaries()">
                                 <i class="fas fa-calculator"></i> Calculate All Salaries
                             </button>
                         </div>
@@ -826,58 +1076,426 @@
                     <div class="table-header">
                         <h2>Salary Calculation Preview</h2>
                         <div>
-                            <button class="btn btn-success mr-1">
+                            <button class="btn btn-success mr-1" onclick="approveAllSalaries()">
                                 <i class="fas fa-check"></i> Approve All
                             </button>
-                            <button class="btn btn-primary">
+                            <button class="btn btn-primary" onclick="generatePayslips()">
                                 <i class="fas fa-file-pdf"></i> Generate Payslips
                             </button>
                         </div>
                     </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th><input type="checkbox"></th>
-                                <th>Employee</th>
-                                <th>Card No</th>
-                                <th>Reg Hrs</th>
-                                <th>OT Hrs</th>
-                                <th>Reg Amt</th>
-                                <th>OT Amt</th>
-                                <th>Deductions</th>
-                                <th>Advances</th>
-                                <th>Total</th>
-                                <th>Payable</th>
-                            </tr>
-                        </thead>
-                        <tbody id="salaryPreview">
-                            <!-- Salary data will be loaded here -->
-                        </tbody>
-                    </table>
+                    <div class="salary-preview">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
+                                    <th>Employee</th>
+                                    <th>Card No</th>
+                                    <th>Reg Hrs</th>
+                                    <th>OT Hrs</th>
+                                    <th>Reg Amt</th>
+                                    <th>OT Amt</th>
+                                    <th>Deductions</th>
+                                    <th>Advances</th>
+                                    <th>Total</th>
+                                    <th>Payable</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="salaryPreview">
+                                <!-- Filled by JavaScript -->
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-right"><strong>Totals:</strong></td>
+                                    <td id="totalRegHrs">0</td>
+                                    <td id="totalOtHrs">0</td>
+                                    <td id="totalRegAmt">₹0</td>
+                                    <td id="totalOtAmt">₹0</td>
+                                    <td id="totalDeductions">₹0</td>
+                                    <td id="totalAdvances">₹0</td>
+                                    <td id="totalSalary">₹0</td>
+                                    <td id="totalPayable">₹0</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Processor -->
+            <div id="payment-processor" class="section d-none">
+                <h1 class="mb-3">Payment Processing</h1>
+                <div class="form-container">
+                    <h2 class="mb-3">Process Payments</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Payment Method</label>
+                            <div class="attendance-grid">
+                                <label class="attendance-item">
+                                    <input type="radio" name="paymentMethod" value="cash" checked>
+                                    <i class="fas fa-money-bill-wave"></i> Cash
+                                </label>
+                                <label class="attendance-item">
+                                    <input type="radio" name="paymentMethod" value="bank">
+                                    <i class="fas fa-university"></i> Bank Transfer
+                                </label>
+                                <label class="attendance-item">
+                                    <input type="radio" name="paymentMethod" value="cheque">
+                                    <i class="fas fa-file-invoice"></i> Cheque
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="paymentDate">Payment Date</label>
+                            <input type="date" id="paymentDate" value="2025-12-20">
+                        </div>
+                        <div class="form-group">
+                            <label for="referenceNumber">Reference Number</label>
+                            <input type="text" id="referenceNumber" placeholder="Auto-generated">
+                        </div>
+                        <div class="form-group">
+                            <label>Selected Employees</label>
+                            <div id="selectedEmployeesList" class="card" style="min-height: 100px; padding: 1rem;">
+                                <!-- Will be populated from salary calculator -->
+                                <p class="text-center text-gray">No employees selected</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Total Amount</label>
+                            <input type="text" id="totalPaymentAmount" value="₹0" readonly class="w-100" style="font-size: 1.5rem; font-weight: bold; text-align: center;">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-secondary" onclick="clearPaymentForm()">Clear</button>
+                        <button class="btn btn-primary" onclick="processPayment()">
+                            <i class="fas fa-paper-plane"></i> Process Payment
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports -->
+            <div id="reports" class="section d-none">
+                <h1 class="mb-3">Reports & Analytics</h1>
+                <div class="tabs">
+                    <button class="tab active" onclick="openTab('salary-report')">Salary Report</button>
+                    <button class="tab" onclick="openTab('attendance-report')">Attendance Report</button>
+                    <button class="tab" onclick="openTab('tax-report')">Tax Report</button>
+                </div>
+
+                <div id="salary-report" class="tab-content active">
+                    <div class="form-container">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>From Date</label>
+                                <input type="month" id="reportFrom" value="2025-12">
+                            </div>
+                            <div class="form-group">
+                                <label>To Date</label>
+                                <input type="month" id="reportTo" value="2025-12">
+                            </div>
+                            <div class="form-group">
+                                <label>Report Type</label>
+                                <select id="reportType">
+                                    <option value="summary">Summary Report</option>
+                                    <option value="detailed">Detailed Report</option>
+                                    <option value="department">Department Wise</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>&nbsp;</label>
+                                <button class="btn btn-primary w-100" onclick="generateReport()">
+                                    <i class="fas fa-chart-bar"></i> Generate Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="reportOutput" class="card mt-3" style="min-height: 400px;">
+                        <!-- Report will be displayed here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings -->
+            <div id="settings" class="section d-none">
+                <h1 class="mb-3">Settings</h1>
+                <div class="form-container">
+                    <h2 class="mb-3">System Settings</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Company Name</label>
+                            <input type="text" id="companyName" value="ABC Manufacturing Pvt Ltd">
+                        </div>
+                        <div class="form-group">
+                            <label>Default Hourly Rate</label>
+                            <input type="number" id="defaultHourlyRate" value="31.25">
+                        </div>
+                        <div class="form-group">
+                            <label>Overtime Rate Multiplier</label>
+                            <input type="number" id="otMultiplier" value="1.5" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label>Regular Working Hours</label>
+                            <input type="number" id="regularHours" value="8">
+                        </div>
+                        <div class="form-group">
+                            <label>Working Days per Month</label>
+                            <input type="number" id="workingDays" value="26">
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-primary" onclick="saveSettings()">
+                            <i class="fas fa-save"></i> Save Settings
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal for Attendance Entry -->
-    <div class="modal" id="attendanceModal">
+    <!-- Modal for Employee Details -->
+    <div class="modal" id="employeeModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Attendance Entry - 15 Dec 2025</h2>
-                <button onclick="closeModal()" class="btn btn-secondary">
+                <h2>Employee Details</h2>
+                <button onclick="closeModal('employeeModal')" class="btn btn-secondary">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="modal-body">
-                <!-- Attendance form will be loaded here -->
+            <div class="modal-body" id="employeeModalBody">
+                <!-- Employee details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Salary Details -->
+    <div class="modal" id="salaryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Salary Details</h2>
+                <button onclick="closeModal('salaryModal')" class="btn btn-secondary">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="salaryModalBody">
+                <!-- Salary details will be loaded here -->
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Chart.js Initialization
+        // Global variables
+        let employees = [];
+        let attendance = [];
+        let salaryData = [];
+        let selectedEmployees = [];
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+
+        // Initialize sample data
+        function initializeSampleData() {
+            // Sample employees data
+            employees = [
+                { id: 1, cardNo: '101', name: 'Rajesh Kumar', gender: 'male', department: 'Production', hourlyRate: 31.25, joinDate: '2023-01-15', status: 'active' },
+                { id: 2, cardNo: '102', name: 'Priya Sharma', gender: 'female', department: 'Quality', hourlyRate: 31.25, joinDate: '2023-02-20', status: 'active' },
+                { id: 3, cardNo: '103', name: 'Amit Patel', gender: 'male', department: 'Maintenance', hourlyRate: 33.33, joinDate: '2023-03-10', status: 'active' },
+                { id: 4, cardNo: '104', name: 'Sneha Singh', gender: 'female', department: 'Admin', hourlyRate: 35.00, joinDate: '2023-04-05', status: 'active' },
+                { id: 5, cardNo: '105', name: 'Ravi Verma', gender: 'male', department: 'Security', hourlyRate: 30.00, joinDate: '2023-05-12', status: 'active' }
+            ];
+
+            // Sample attendance data
+            attendance = [
+                { employeeId: 1, date: '2025-12-01', hours: 8, overtime: 2 },
+                { employeeId: 1, date: '2025-12-02', hours: 8, overtime: 1 },
+                { employeeId: 2, date: '2025-12-01', hours: 8, overtime: 0 },
+                { employeeId: 3, date: '2025-12-01', hours: 8, overtime: 3 }
+            ];
+
+            // Sample salary data
+            salaryData = [
+                { employeeId: 1, month: '2025-12', regularHours: 176, overtimeHours: 12, regularAmount: 5500, overtimeAmount: 225, deductions: 0, advances: 2000, total: 7725, payable: 5725 },
+                { employeeId: 2, month: '2025-12', regularHours: 160, overtimeHours: 8, regularAmount: 5000, overtimeAmount: 150, deductions: 500, advances: 1500, total: 6650, payable: 4650 },
+                { employeeId: 3, month: '2025-12', regularHours: 168, overtimeHours: 16, regularAmount: 5600, overtimeAmount: 800, deductions: 0, advances: 0, total: 6400, payable: 6400 }
+            ];
+
+            // Save to localStorage
+            saveToLocalStorage();
+        }
+
+        // Local Storage functions
+        function saveToLocalStorage() {
+            localStorage.setItem('salarySystem_employees', JSON.stringify(employees));
+            localStorage.setItem('salarySystem_attendance', JSON.stringify(attendance));
+            localStorage.setItem('salarySystem_salaryData', JSON.stringify(salaryData));
+        }
+
+        function loadFromLocalStorage() {
+            const savedEmployees = localStorage.getItem('salarySystem_employees');
+            const savedAttendance = localStorage.getItem('salarySystem_attendance');
+            const savedSalaryData = localStorage.getItem('salarySystem_salaryData');
+
+            if (savedEmployees) employees = JSON.parse(savedEmployees);
+            if (savedAttendance) attendance = JSON.parse(savedAttendance);
+            if (savedSalaryData) salaryData = JSON.parse(savedSalaryData);
+
+            if (employees.length === 0) {
+                initializeSampleData();
+            }
+        }
+
+        // Toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'exclamation-triangle'}"></i>
+                <span>${message}</span>
+            `;
+            toast.className = `toast ${type} show`;
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Navigation functions
+        function navigateTo(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('d-none');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.remove('d-none');
+            
+            // Update active nav links
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Update active state
+            document.querySelector(`[onclick*="${sectionId}"]`).classList.add('active');
+            
+            // Update tab in nav links
+            const navLink = document.querySelector(`.nav-links a[onclick*="${sectionId}"]`);
+            if (navLink) navLink.classList.add('active');
+            
+            // Close mobile sidebar
+            document.getElementById('sidebar').classList.remove('active');
+            
+            // Load section data
+            switch(sectionId) {
+                case 'dashboard':
+                    loadDashboard();
+                    break;
+                case 'employee-management':
+                    loadEmployees();
+                    break;
+                case 'attendance-tracker':
+                    loadAttendanceCalendar();
+                    break;
+                case 'salary-calculator':
+                    loadSalaryData();
+                    break;
+                case 'payment-processor':
+                    loadPaymentProcessor();
+                    break;
+                case 'reports':
+                    loadReports();
+                    break;
+            }
+        }
+
+        // Tab functions
+        function openTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Remove active from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Mobile menu
+        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
+
+        // Dashboard functions
+        function loadDashboard() {
+            updateDashboardStats();
+            loadRecentPayments();
+            initializeCharts();
+        }
+
+        function updateDashboardStats() {
+            const totalEmployees = employees.length;
+            const paidCount = salaryData.filter(s => s.payable > 0).length;
+            const pendingCount = totalEmployees - paidCount;
+            const totalSalary = salaryData.reduce((sum, s) => sum + s.total, 0);
+            
+            document.getElementById('totalEmployees').textContent = totalEmployees;
+            document.getElementById('paidEmployees').textContent = paidCount;
+            document.getElementById('pendingPayments').textContent = pendingCount;
+            document.getElementById('monthSalary').textContent = `₹${totalSalary.toLocaleString()}`;
+        }
+
+        function loadRecentPayments() {
+            const tableBody = document.getElementById('recentPaymentsTable');
+            tableBody.innerHTML = '';
+            
+            salaryData.slice(0, 5).forEach(salary => {
+                const employee = employees.find(e => e.id === salary.employeeId);
+                if (employee) {
+                    const row = `
+                        <tr>
+                            <td>
+                                <strong>${employee.name}</strong><br>
+                                <small>${employee.department}</small>
+                            </td>
+                            <td>${employee.cardNo}</td>
+                            <td>${salary.month}</td>
+                            <td>₹${salary.total.toLocaleString()}</td>
+                            <td>Bank Transfer</td>
+                            <td><span class="status ${salary.payable > 0 ? 'paid' : 'pending'}">${salary.payable > 0 ? 'Paid' : 'Pending'}</span></td>
+                            <td>
+                                <button class="btn btn-secondary btn-sm" onclick="viewSalaryDetails(${employee.id})"><i class="fas fa-eye"></i></button>
+                                <button class="btn btn-secondary btn-sm" onclick="printPayslip(${employee.id})"><i class="fas fa-print"></i></button>
+                            </td>
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
+                }
+            });
+        }
+
+        // Chart functions
         function initializeCharts() {
+            // Destroy existing charts
+            const salaryChart = Chart.getChart('salaryChart');
+            const deptChart = Chart.getChart('departmentChart');
+            if (salaryChart) salaryChart.destroy();
+            if (deptChart) deptChart.destroy();
+            
             // Salary Distribution Chart
             const salaryCtx = document.getElementById('salaryChart').getContext('2d');
             new Chart(salaryCtx, {
@@ -889,130 +1507,651 @@
                         data: [650000, 680000, 720000, 710000, 730000, 750000, 740000, 760000, 780000, 790000, 800000, 784500],
                         borderColor: '#2563eb',
                         backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                        fill: true
+                        fill: true,
+                        tension: 0.4
                     }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '₹' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
                 }
             });
-
+            
             // Department Chart
             const deptCtx = document.getElementById('departmentChart').getContext('2d');
+            const deptData = {};
+            employees.forEach(emp => {
+                deptData[emp.department] = (deptData[emp.department] || 0) + 1;
+            });
+            
             new Chart(deptCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Production', 'Quality', 'Maintenance', 'Admin', 'Security'],
+                    labels: Object.keys(deptData),
                     datasets: [{
-                        data: [85, 25, 15, 20, 11],
+                        data: Object.values(deptData),
                         backgroundColor: [
                             '#2563eb',
                             '#10b981',
                             '#f59e0b',
                             '#8b5cf6',
-                            '#ec4899'
+                            '#ec4899',
+                            '#6366f1',
+                            '#14b8a6'
                         ]
                     }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
                 }
             });
         }
 
-        // Modal Functions
-        function openModal() {
-            document.getElementById('attendanceModal').classList.add('active');
-        }
-
-        function closeModal() {
-            document.getElementById('attendanceModal').classList.remove('active');
-        }
-
-        // Tab Switching
-        function openTab(tabName) {
-            const tabs = document.querySelectorAll('.tab');
-            const tabContents = document.querySelectorAll('.tab-content');
-            
-            tabs.forEach(tab => tab.classList.remove('active'));
-            tabContents.forEach(content => content.classList.remove('active'));
-            
-            event.currentTarget.classList.add('active');
-            document.getElementById(tabName).classList.add('active');
-        }
-
-        // Navigation
-        function navigateTo(section) {
-            const sections = document.querySelectorAll('.main-content > div');
-            sections.forEach(sec => sec.style.display = 'none');
-            
-            const sidebarItems = document.querySelectorAll('.sidebar-item');
-            sidebarItems.forEach(item => item.classList.remove('active'));
-            
-            document.getElementById(section).style.display = 'block';
-            event.currentTarget.classList.add('active');
-        }
-
-        // Form Submission
-        document.getElementById('employeeForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Employee saved successfully!');
-            this.reset();
-        });
-
-        // Sample Data for Salary Preview
-        function loadSalaryPreview() {
-            const sampleData = [
-                { name: 'Rajesh Kumar', card: 101, regHrs: 176, otHrs: 12, regAmt: 15840, otAmt: 2160, ded: 0, adv: 2000, total: 18000, payable: 16000 },
-                { name: 'Priya Sharma', card: 102, regHrs: 160, otHrs: 8, regAmt: 14400, otAmt: 1440, ded: 500, adv: 1500, total: 15840, payable: 13840 },
-                { name: 'Amit Patel', card: 103, regHrs: 168, otHrs: 16, regAmt: 15120, otAmt: 2880, ded: 0, adv: 0, total: 18000, payable: 18000 }
-            ];
-
-            const tableBody = document.getElementById('salaryPreview');
+        // Employee Management functions
+        function loadEmployees() {
+            const tableBody = document.getElementById('employeeTable');
             tableBody.innerHTML = '';
-
-            sampleData.forEach(employee => {
+            
+            employees.forEach(employee => {
                 const row = `
                     <tr>
-                        <td><input type="checkbox"></td>
-                        <td>${employee.name}</td>
-                        <td>${employee.card}</td>
-                        <td>${employee.regHrs}</td>
-                        <td>${employee.otHrs}</td>
-                        <td>₹${employee.regAmt.toLocaleString()}</td>
-                        <td>₹${employee.otAmt.toLocaleString()}</td>
-                        <td>₹${employee.ded.toLocaleString()}</td>
-                        <td>₹${employee.adv.toLocaleString()}</td>
-                        <td><strong>₹${employee.total.toLocaleString()}</strong></td>
-                        <td><strong class="text-success">₹${employee.payable.toLocaleString()}</strong></td>
+                        <td>${employee.cardNo}</td>
+                        <td>
+                            <strong>${employee.name}</strong><br>
+                            <small class="text-gray">ID: ${employee.id}</small>
+                        </td>
+                        <td>${employee.gender === 'male' ? 'Male' : 'Female'}</td>
+                        <td>${employee.department}</td>
+                        <td>₹${employee.hourlyRate}</td>
+                        <td><span class="status ${employee.status === 'active' ? 'paid' : 'pending'}">${employee.status}</span></td>
+                        <td>
+                            <button class="btn btn-secondary btn-sm" onclick="viewEmployee(${employee.id})"><i class="fas fa-eye"></i></button>
+                            <button class="btn btn-secondary btn-sm" onclick="editEmployee(${employee.id})"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteEmployee(${employee.id})"><i class="fas fa-trash"></i></button>
+                        </td>
                     </tr>
                 `;
                 tableBody.innerHTML += row;
             });
+            
+            // Load employee dropdown for attendance
+            const selectEmployee = document.getElementById('selectEmployee');
+            selectEmployee.innerHTML = '<option value="">Select Employee</option>';
+            employees.forEach(emp => {
+                selectEmployee.innerHTML += `<option value="${emp.id}">${emp.name} (${emp.cardNo})</option>`;
+            });
         }
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeCharts();
-            loadSalaryPreview();
+        function searchEmployees() {
+            const searchTerm = document.getElementById('searchEmployee').value.toLowerCase();
+            const rows = document.querySelectorAll('#employeeTable tr');
             
-            // Add click handlers to sidebar
-            document.querySelectorAll('.sidebar-item').forEach(item => {
-                item.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const target = this.getAttribute('href').substring(1);
-                    navigateTo(target);
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        function saveEmployee(event) {
+            event.preventDefault();
+            
+            const employee = {
+                id: employees.length > 0 ? Math.max(...employees.map(e => e.id)) + 1 : 1,
+                cardNo: document.getElementById('cardNo').value,
+                name: document.getElementById('employeeName').value,
+                gender: document.getElementById('gender').value,
+                hourlyRate: parseFloat(document.getElementById('hourlyRate').value),
+                department: document.getElementById('department').value,
+                joinDate: document.getElementById('joinDate').value,
+                status: 'active'
+            };
+            
+            employees.push(employee);
+            saveToLocalStorage();
+            loadEmployees();
+            openTab('employee-list');
+            showToast('Employee saved successfully!');
+            
+            // Reset form
+            document.getElementById('employeeForm').reset();
+        }
+
+        function viewEmployee(id) {
+            const employee = employees.find(e => e.id === id);
+            if (employee) {
+                document.getElementById('employeeModalBody').innerHTML = `
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Card Number</label>
+                            <input type="text" value="${employee.cardNo}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Name</label>
+                            <input type="text" value="${employee.name}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Gender</label>
+                            <input type="text" value="${employee.gender === 'male' ? 'Male' : 'Female'}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Hourly Rate</label>
+                            <input type="text" value="₹${employee.hourlyRate}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Department</label>
+                            <input type="text" value="${employee.department}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Join Date</label>
+                            <input type="text" value="${employee.joinDate}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <input type="text" value="${employee.status}" readonly>
+                        </div>
+                    </div>
+                    <div class="form-actions mt-3">
+                        <button class="btn btn-primary" onclick="editEmployee(${employee.id}); closeModal('employeeModal')">Edit</button>
+                        <button class="btn btn-secondary" onclick="closeModal('employeeModal')">Close</button>
+                    </div>
+                `;
+                openModal('employeeModal');
+            }
+        }
+
+        function editEmployee(id) {
+            const employee = employees.find(e => e.id === id);
+            if (employee) {
+                document.getElementById('cardNo').value = employee.cardNo;
+                document.getElementById('employeeName').value = employee.name;
+                document.getElementById('gender').value = employee.gender;
+                document.getElementById('hourlyRate').value = employee.hourlyRate;
+                document.getElementById('department').value = employee.department;
+                document.getElementById('joinDate').value = employee.joinDate;
+                openTab('add-employee');
+                showToast('Employee loaded for editing');
+            }
+        }
+
+        function deleteEmployee(id) {
+            if (confirm('Are you sure you want to delete this employee?')) {
+                employees = employees.filter(e => e.id !== id);
+                saveToLocalStorage();
+                loadEmployees();
+                showToast('Employee deleted successfully!');
+            }
+        }
+
+        // Attendance functions
+        function loadAttendanceCalendar() {
+            const calendar = document.getElementById('attendanceCalendar');
+            calendar.innerHTML = '';
+            
+            // Add headers
+            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            days.forEach(day => {
+                calendar.innerHTML += `<div class="calendar-day header">${day}</div>`;
+            });
+            
+            // Get first day of month
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            
+            // Add empty cells for days before first day
+            for (let i = 0; i < firstDay; i++) {
+                calendar.innerHTML += `<div class="calendar-day"></div>`;
+            }
+            
+            // Get days in month
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            
+            // Add days
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dayAttendance = attendance.filter(a => a.date === dateStr);
+                
+                let attendanceHTML = '';
+                if (dayAttendance.length > 0) {
+                    const present = dayAttendance.length;
+                    attendanceHTML = `<span class="text-success">${present} present</span>`;
+                }
+                
+                calendar.innerHTML += `
+                    <div class="calendar-day">
+                        <div class="day-number">${day}</div>
+                        <div class="mt-2">${attendanceHTML}</div>
+                    </div>
+                `;
+            }
+            
+            // Update month display
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            document.querySelector('#calendar-view h3').textContent = `${monthNames[currentMonth]} ${currentYear}`;
+        }
+
+        function changeMonth(delta) {
+            currentMonth += delta;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            } else if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            loadAttendanceCalendar();
+        }
+
+        function saveAttendance() {
+            const employeeId = parseInt(document.getElementById('selectEmployee').value);
+            const date = document.getElementById('attendanceDate').value;
+            const hours = parseFloat(document.getElementById('hoursWorked').value);
+            const overtime = parseFloat(document.getElementById('overtimeHours').value);
+            
+            if (!employeeId || !date || isNaN(hours)) {
+                showToast('Please fill all required fields', 'error');
+                return;
+            }
+            
+            // Check if attendance already exists for this date and employee
+            const existingIndex = attendance.findIndex(a => a.employeeId === employeeId && a.date === date);
+            
+            if (existingIndex >= 0) {
+                // Update existing
+                attendance[existingIndex] = { employeeId, date, hours, overtime };
+            } else {
+                // Add new
+                attendance.push({ employeeId, date, hours, overtime });
+            }
+            
+            saveToLocalStorage();
+            showToast('Attendance saved successfully!');
+            clearAttendanceForm();
+            loadAttendanceCalendar();
+        }
+
+        function clearAttendanceForm() {
+            document.getElementById('selectEmployee').value = '';
+            document.getElementById('hoursWorked').value = '8';
+            document.getElementById('overtimeHours').value = '0';
+        }
+
+        // Salary Calculator functions
+        function loadSalaryData() {
+            const month = document.getElementById('salaryMonth').value;
+            const tableBody = document.getElementById('salaryPreview');
+            tableBody.innerHTML = '';
+            
+            let totalRegHrs = 0;
+            let totalOtHrs = 0;
+            let totalRegAmt = 0;
+            let totalOtAmt = 0;
+            let totalDed = 0;
+            let totalAdv = 0;
+            let totalSalary = 0;
+            let totalPayable = 0;
+            
+            employees.forEach(employee => {
+                // Calculate attendance for the month
+                const monthAttendance = attendance.filter(a => {
+                    const attDate = new Date(a.date);
+                    return attDate.getMonth() === parseInt(month.split('-')[1]) - 1 &&
+                           attDate.getFullYear() === parseInt(month.split('-')[0]) &&
+                           a.employeeId === employee.id;
+                });
+                
+                const totalHours = monthAttendance.reduce((sum, a) => sum + a.hours, 0);
+                const overtimeHours = monthAttendance.reduce((sum, a) => sum + (a.overtime || 0), 0);
+                const regularHours = totalHours - overtimeHours;
+                
+                const regularAmount = regularHours * employee.hourlyRate;
+                const overtimeAmount = overtimeHours * employee.hourlyRate * 1.5;
+                const deductions = 0;
+                const advances = 0;
+                const total = regularAmount + overtimeAmount;
+                const payable = total - deductions - advances;
+                
+                totalRegHrs += regularHours;
+                totalOtHrs += overtimeHours;
+                totalRegAmt += regularAmount;
+                totalOtAmt += overtimeAmount;
+                totalDed += deductions;
+                totalAdv += advances;
+                totalSalary += total;
+                totalPayable += payable;
+                
+                const row = `
+                    <tr>
+                        <td><input type="checkbox" value="${employee.id}" onchange="updateSelectedEmployees(this)"></td>
+                        <td>${employee.name}</td>
+                        <td>${employee.cardNo}</td>
+                        <td>${regularHours.toFixed(2)}</td>
+                        <td>${overtimeHours.toFixed(2)}</td>
+                        <td>₹${regularAmount.toFixed(2)}</td>
+                        <td>₹${overtimeAmount.toFixed(2)}</td>
+                        <td>₹${deductions.toFixed(2)}</td>
+                        <td>₹${advances.toFixed(2)}</td>
+                        <td>₹${total.toFixed(2)}</td>
+                        <td><strong class="text-success">₹${payable.toFixed(2)}</strong></td>
+                        <td>
+                            <button class="btn btn-secondary btn-sm" onclick="viewSalaryDetails(${employee.id})"><i class="fas fa-eye"></i></button>
+                        </td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+            
+            // Update totals
+            document.getElementById('totalRegHrs').textContent = totalRegHrs.toFixed(2);
+            document.getElementById('totalOtHrs').textContent = totalOtHrs.toFixed(2);
+            document.getElementById('totalRegAmt').textContent = `₹${totalRegAmt.toFixed(2)}`;
+            document.getElementById('totalOtAmt').textContent = `₹${totalOtAmt.toFixed(2)}`;
+            document.getElementById('totalDeductions').textContent = `₹${totalDed.toFixed(2)}`;
+            document.getElementById('totalAdvances').textContent = `₹${totalAdv.toFixed(2)}`;
+            document.getElementById('totalSalary').textContent = `₹${totalSalary.toFixed(2)}`;
+            document.getElementById('totalPayable').textContent = `₹${totalPayable.toFixed(2)}`;
+        }
+
+        function calculateAllSalaries() {
+            // Recalculate all salaries based on attendance
+            salaryData = [];
+            
+            const month = document.getElementById('salaryMonth').value;
+            employees.forEach(employee => {
+                const monthAttendance = attendance.filter(a => {
+                    const attDate = new Date(a.date);
+                    return attDate.getMonth() === parseInt(month.split('-')[1]) - 1 &&
+                           attDate.getFullYear() === parseInt(month.split('-')[0]) &&
+                           a.employeeId === employee.id;
+                });
+                
+                const totalHours = monthAttendance.reduce((sum, a) => sum + a.hours, 0);
+                const overtimeHours = monthAttendance.reduce((sum, a) => sum + (a.overtime || 0), 0);
+                const regularHours = totalHours - overtimeHours;
+                
+                salaryData.push({
+                    employeeId: employee.id,
+                    month: month,
+                    regularHours: regularHours,
+                    overtimeHours: overtimeHours,
+                    regularAmount: regularHours * employee.hourlyRate,
+                    overtimeAmount: overtimeHours * employee.hourlyRate * 1.5,
+                    deductions: 0,
+                    advances: 0,
+                    total: regularHours * employee.hourlyRate + overtimeHours * employee.hourlyRate * 1.5,
+                    payable: regularHours * employee.hourlyRate + overtimeHours * employee.hourlyRate * 1.5
                 });
             });
-        });
+            
+            saveToLocalStorage();
+            loadSalaryData();
+            showToast('All salaries calculated successfully!');
+        }
 
-        // Close modal when clicking outside
-        window.addEventListener('click', function(e) {
-            if (e.target.id === 'attendanceModal') {
-                closeModal();
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('#salaryPreview input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = selectAll.checked);
+            updateSelectedEmployees();
+        }
+
+        function updateSelectedEmployees(checkbox) {
+            selectedEmployees = [];
+            const checkboxes = document.querySelectorAll('#salaryPreview input[type="checkbox"]:checked');
+            checkboxes.forEach(cb => {
+                selectedEmployees.push(parseInt(cb.value));
+            });
+            
+            // Update payment processor
+            loadPaymentProcessor();
+        }
+
+        function viewSalaryDetails(employeeId) {
+            const employee = employees.find(e => e.id === employeeId);
+            const salary = salaryData.find(s => s.employeeId === employeeId);
+            
+            if (employee && salary) {
+                document.getElementById('salaryModalBody').innerHTML = `
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Employee</label>
+                            <input type="text" value="${employee.name} (${employee.cardNo})" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Month</label>
+                            <input type="text" value="${salary.month}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Regular Hours</label>
+                            <input type="text" value="${salary.regularHours}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Overtime Hours</label>
+                            <input type="text" value="${salary.overtimeHours}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Regular Amount</label>
+                            <input type="text" value="₹${salary.regularAmount.toFixed(2)}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Overtime Amount</label>
+                            <input type="text" value="₹${salary.overtimeAmount.toFixed(2)}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Deductions</label>
+                            <input type="text" value="₹${salary.deductions.toFixed(2)}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Advances</label>
+                            <input type="text" value="₹${salary.advances.toFixed(2)}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Total Salary</label>
+                            <input type="text" value="₹${salary.total.toFixed(2)}" readonly style="font-weight: bold;">
+                        </div>
+                        <div class="form-group">
+                            <label>Net Payable</label>
+                            <input type="text" value="₹${salary.payable.toFixed(2)}" readonly style="font-weight: bold; color: var(--success-color);">
+                        </div>
+                    </div>
+                    <div class="form-actions mt-3">
+                        <button class="btn btn-primary" onclick="printPayslip(${employee.id})"><i class="fas fa-print"></i> Print Payslip</button>
+                        <button class="btn btn-secondary" onclick="closeModal('salaryModal')">Close</button>
+                    </div>
+                `;
+                openModal('salaryModal');
             }
+        }
+
+        // Payment Processor functions
+        function loadPaymentProcessor() {
+            const selectedList = document.getElementById('selectedEmployeesList');
+            const totalAmount = document.getElementById('totalPaymentAmount');
+            
+            if (selectedEmployees.length === 0) {
+                selectedList.innerHTML = '<p class="text-center text-gray">No employees selected</p>';
+                totalAmount.value = '₹0';
+                return;
+            }
+            
+            let total = 0;
+            let listHTML = '<div class="attendance-grid">';
+            
+            selectedEmployees.forEach(empId => {
+                const employee = employees.find(e => e.id === empId);
+                const salary = salaryData.find(s => s.employeeId === empId);
+                
+                if (employee && salary) {
+                    total += salary.payable;
+                    listHTML += `
+                        <div class="attendance-item">
+                            <strong>${employee.name}</strong><br>
+                            <small>Card: ${employee.cardNo}</small><br>
+                            <span class="text-success">₹${salary.payable.toFixed(2)}</span>
+                        </div>
+                    `;
+                }
+            });
+            
+            listHTML += '</div>';
+            selectedList.innerHTML = listHTML;
+            totalAmount.value = `₹${total.toFixed(2)}`;
+            
+            // Generate reference number
+            document.getElementById('referenceNumber').value = 'REF' + Date.now().toString().slice(-8);
+        }
+
+        function processPayment() {
+            if (selectedEmployees.length === 0) {
+                showToast('Please select employees to process payment', 'error');
+                return;
+            }
+            
+            const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+            const paymentDate = document.getElementById('paymentDate').value;
+            const reference = document.getElementById('referenceNumber').value;
+            
+            // In a real application, you would save this to database
+            showToast(`Payment processed for ${selectedEmployees.length} employees. Reference: ${reference}`);
+            
+            // Reset form
+            clearPaymentForm();
+            
+            // Navigate back to salary calculator
+            navigateTo('salary-calculator');
+        }
+
+        function clearPaymentForm() {
+            document.querySelector('input[name="paymentMethod"][value="cash"]').checked = true;
+            document.getElementById('paymentDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('referenceNumber').value = 'REF' + Date.now().toString().slice(-8);
+            document.getElementById('selectedEmployeesList').innerHTML = '<p class="text-center text-gray">No employees selected</p>';
+            document.getElementById('totalPaymentAmount').value = '₹0';
+        }
+
+        // Report functions
+        function generateReport() {
+            const fromDate = document.getElementById('reportFrom').value;
+            const toDate = document.getElementById('reportTo').value;
+            const reportType = document.getElementById('reportType').value;
+            
+            let reportHTML = '<h3>Salary Report</h3>';
+            reportHTML += `<p>Period: ${fromDate} to ${toDate}</p>`;
+            
+            if (reportType === 'summary') {
+                reportHTML += generateSummaryReport();
+            } else if (reportType === 'detailed') {
+                reportHTML += generateDetailedReport();
+            } else if (reportType === 'department') {
+                reportHTML += generateDepartmentReport();
+            }
+            
+            document.getElementById('reportOutput').innerHTML = reportHTML;
+        }
+
+        function generateSummaryReport() {
+            let html = '<table class="w-100"><thead><tr><th>Department</th><th>Employees</th><th>Total Salary</th><th>Avg Salary</th></tr></thead><tbody>';
+            
+            const deptData = {};
+            employees.forEach(emp => {
+                if (!deptData[emp.department]) {
+                    deptData[emp.department] = { count: 0, total: 0 };
+                }
+                deptData[emp.department].count++;
+                
+                const salary = salaryData.find(s => s.employeeId === emp.id);
+                if (salary) {
+                    deptData[emp.department].total += salary.total;
+                }
+            });
+            
+            Object.entries(deptData).forEach(([dept, data]) => {
+                const avg = data.total / data.count;
+                html += `<tr><td>${dept}</td><td>${data.count}</td><td>₹${data.total.toFixed(2)}</td><td>₹${avg.toFixed(2)}</td></tr>`;
+            });
+            
+            html += '</tbody></table>';
+            return html;
+        }
+
+        // Export functions
+        function exportData() {
+            showToast('Export functionality would be implemented here', 'warning');
+        }
+
+        function downloadTemplate() {
+            showToast('Template download would be implemented here', 'warning');
+        }
+
+        function printPayslip(employeeId) {
+            showToast('Print functionality would be implemented here', 'warning');
+        }
+
+        function generatePayslips() {
+            if (selectedEmployees.length === 0) {
+                showToast('Please select employees to generate payslips', 'error');
+                return;
+            }
+            showToast(`Generating payslips for ${selectedEmployees.length} employees`, 'success');
+        }
+
+        // Settings functions
+        function saveSettings() {
+            showToast('Settings saved successfully!');
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load data from localStorage
+            loadFromLocalStorage();
+            
+            // Initialize dashboard
+            navigateTo('dashboard');
+            
+            // Close modals when clicking outside
+            window.addEventListener('click', function(e) {
+                if (e.target.classList.contains('modal')) {
+                    e.target.classList.remove('active');
+                }
+            });
+            
+            // Close sidebar when clicking on link
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        document.getElementById('sidebar').classList.remove('active');
+                    }
+                });
+            });
+            
+            // Set today's date in forms
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('attendanceDate').value = today;
+            document.getElementById('paymentDate').value = today;
+            document.getElementById('joinDate').value = today;
+            
+            // Generate initial reference number
+            document.getElementById('referenceNumber').value = 'REF' + Date.now().toString().slice(-8);
         });
     </script>
 </body>
