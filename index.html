@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salary Calculation System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --light-color: #f8fafc;
+            --dark-color: #1e293b;
+            --gray-color: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            color: var(--dark-color);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--gray-color);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        /* Sidebar Styles */
+        .app-container {
+            display: flex;
+            margin-top: 80px;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: white;
+            height: calc(100vh - 80px);
+            position: fixed;
+            left: 0;
+            top: 80px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--gray-color);
+            text-decoration: none;
+        }
+
+        .sidebar-item:hover,
+        .sidebar-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .sidebar-item i {
+            width: 20px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 2rem;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .card-icon.users { background-color: var(--primary-color); }
+        .card-icon.salary { background-color: var(--success-color); }
+        .card-icon.pending { background-color: var(--warning-color); }
+        .card-icon.paid { background-color: var(--secondary-color); }
+
+        .card h3 {
+            font-size: 0.9rem;
+            color: var(--gray-color);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card .value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+
+        .card .change {
+            font-size: 0.9rem;
+            color: var(--success-color);
+        }
+
+        /* Charts */
+        .charts-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .chart-card h2 {
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+        }
+
+        /* Tables */
+        .data-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .status.paid {
+            background-color: #d1fae5;
+            color: var(--success-color);
+        }
+
+        .status.pending {
+            background-color: #fef3c7;
+            color: var(--warning-color);
+        }
+
+        /* Forms */
+        .form-container {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-secondary {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #e2e8f0;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #0da271;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+
+        /* Calendar */
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background-color: var(--border-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .calendar-day {
+            background: white;
+            padding: 1rem;
+            min-height: 100px;
+            position: relative;
+        }
+
+        .calendar-day.header {
+            background-color: #f8fafc;
+            font-weight: 600;
+            text-align: center;
+            min-height: auto;
+        }
+
+        .day-number {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            font-weight: bold;
+        }
+
+        .attendance-mark {
+            position: absolute;
+            bottom: 0.5rem;
+            left: 0.5rem;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .attendance-mark.present { background-color: var(--success-color); }
+        .attendance-mark.absent { background-color: var(--danger-color); }
+        .attendance-mark.overtime { background-color: var(--warning-color); }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab:hover,
+        .tab.active {
+            border-bottom-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Utility Classes */
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .text-success { color: var(--success-color); }
+        .text-warning { color: var(--warning-color); }
+        .text-danger { color: var(--danger-color); }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mb-3 { margin-bottom: 1.5rem; }
+        .mt-2 { margin-top: 1rem; }
+        .mt-3 { margin-top: 1.5rem; }
+        .w-100 { width: 100%; }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 200px;
+            }
+            .main-content {
+                margin-left: 200px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="navbar">
+                <div class="logo">
+                    <i class="fas fa-calculator"></i>
+                    SalaryCalc Pro
+                </div>
+                <div class="nav-links">
+                    <a href="#" class="active">Dashboard</a>
+                    <a href="#employees">Employees</a>
+                    <a href="#attendance">Attendance</a>
+                    <a href="#salary">Salary</a>
+                    <a href="#reports">Reports</a>
+                </div>
+                <div class="user-menu">
+                    <span>John Doe</span>
+                    <div class="avatar">
+                        <i class="fas fa-user-circle" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Application -->
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-menu">
+                <a href="#" class="sidebar-item active">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#employee-management" class="sidebar-item">
+                    <i class="fas fa-users"></i>
+                    <span>Employee Management</span>
+                </a>
+                <a href="#attendance-tracker" class="sidebar-item">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Attendance Tracker</span>
+                </a>
+                <a href="#salary-calculator" class="sidebar-item">
+                    <i class="fas fa-calculator"></i>
+                    <span>Salary Calculator</span>
+                </a>
+                <a href="#payment-processor" class="sidebar-item">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Payment Processing</span>
+                </a>
+                <a href="#reports" class="sidebar-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reports & Analytics</span>
+                </a>
+                <a href="#settings" class="sidebar-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Dashboard -->
+            <div id="dashboard">
+                <h1 class="mb-3">Dashboard</h1>
+                
+                <!-- Quick Stats Cards -->
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon users">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <i class="fas fa-ellipsis-h"></i>
+                        </div>
+                        <h3>Total Employees</h3>
+                        <div class="value">156</div>
+                        <div class="change">+12% from last month</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon salary">
+                                <i class="fas fa-wallet"></i>
+                            </div>
+                            <i class="fas fa-ellipsis-h"></i>
+                        </div>
+                        <h3>This Month Salary</h3>
+                        <div class="value">₹7,84,500</div>
+                        <div class="change">+8% from last month</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon pending">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <i class="fas fa-ellipsis-h"></i>
+                        </div>
+                        <h3>Pending Payments</h3>
+                        <div class="value">5</div>
+                        <div class="change">₹42,800 total pending</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon paid">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <i class="fas fa-ellipsis-h"></i>
+                        </div>
+                        <h3>Paid This Month</h3>
+                        <div class="value">151</div>
+                        <div class="change">₹7,41,700 total paid</div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-container">
+                    <div class="chart-card">
+                        <h2>Salary Distribution</h2>
+                        <canvas id="salaryChart" style="height: 300px;"></canvas>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <h2>Department Wise</h2>
+                        <canvas id="departmentChart" style="height: 300px;"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recent Payments Table -->
+                <div class="data-table">
+                    <div class="table-header">
+                        <h2>Recent Payments</h2>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Card No</th>
+                                <th>Month</th>
+                                <th>Amount</th>
+                                <th>Payment Method</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <strong>Rajesh Kumar</strong><br>
+                                    <small>EMP001</small>
+                                </td>
+                                <td>101</td>
+                                <td>Dec 2025</td>
+                                <td>₹18,500</td>
+                                <td>Bank Transfer</td>
+                                <td><span class="status paid">Paid</span></td>
+                                <td>
+                                    <button class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-secondary btn-sm"><i class="fas fa-print"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>Priya Sharma</strong><br>
+                                    <small>EMP002</small>
+                                </td>
+                                <td>102</td>
+                                <td>Dec 2025</td>
+                                <td>₹16,200</td>
+                                <td>Cash</td>
+                                <td><span class="status paid">Paid</span></td>
+                                <td>
+                                    <button class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-secondary btn-sm"><i class="fas fa-print"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>Amit Patel</strong><br>
+                                    <small>EMP003</small>
+                                </td>
+                                <td>103</td>
+                                <td>Dec 2025</td>
+                                <td>₹21,000</td>
+                                <td>Cheque</td>
+                                <td><span class="status pending">Pending</span></td>
+                                <td>
+                                    <button class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-success btn-sm"><i class="fas fa-check"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Employee Management (Hidden by default) -->
+            <div id="employee-management" style="display: none;">
+                <h1 class="mb-3">Employee Management</h1>
+                
+                <div class="tabs">
+                    <div class="tab active" onclick="openTab('employee-list')">Employee List</div>
+                    <div class="tab" onclick="openTab('add-employee')">Add New Employee</div>
+                    <div class="tab" onclick="openTab('bulk-upload')">Bulk Upload</div>
+                </div>
+
+                <div id="employee-list" class="tab-content active">
+                    <div class="table-header">
+                        <h2>All Employees</h2>
+                        <div>
+                            <button class="btn btn-secondary mr-1">
+                                <i class="fas fa-filter"></i> Filter
+                            </button>
+                            <button class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Add Employee
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Employee table will be loaded here -->
+                </div>
+
+                <div id="add-employee" class="tab-content">
+                    <div class="form-container">
+                        <h2 class="mb-3">Add New Employee</h2>
+                        <form id="employeeForm">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="cardNo">Card Number *</label>
+                                    <input type="text" id="cardNo" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="employeeName">Full Name *</label>
+                                    <input type="text" id="employeeName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="gender">Gender</label>
+                                    <select id="gender">
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="hourlyRate">Hourly Rate (₹) *</label>
+                                    <input type="number" id="hourlyRate" step="0.01" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="department">Department</label>
+                                    <input type="text" id="department">
+                                </div>
+                                <div class="form-group">
+                                    <label for="joinDate">Join Date</label>
+                                    <input type="date" id="joinDate">
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Save Employee</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Salary Calculator (Hidden by default) -->
+            <div id="salary-calculator" style="display: none;">
+                <h1 class="mb-3">Salary Calculator - December 2025</h1>
+                
+                <div class="card mb-3">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Select Month</label>
+                            <input type="month" value="2025-12">
+                        </div>
+                        <div class="form-group">
+                            <label>Calculation Rules</label>
+                            <select>
+                                <option>Standard (8 hrs regular, 1.5x OT)</option>
+                                <option>Custom Rules</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <button class="btn btn-primary w-100">
+                                <i class="fas fa-calculator"></i> Calculate All Salaries
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="data-table">
+                    <div class="table-header">
+                        <h2>Salary Calculation Preview</h2>
+                        <div>
+                            <button class="btn btn-success mr-1">
+                                <i class="fas fa-check"></i> Approve All
+                            </button>
+                            <button class="btn btn-primary">
+                                <i class="fas fa-file-pdf"></i> Generate Payslips
+                            </button>
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox"></th>
+                                <th>Employee</th>
+                                <th>Card No</th>
+                                <th>Reg Hrs</th>
+                                <th>OT Hrs</th>
+                                <th>Reg Amt</th>
+                                <th>OT Amt</th>
+                                <th>Deductions</th>
+                                <th>Advances</th>
+                                <th>Total</th>
+                                <th>Payable</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salaryPreview">
+                            <!-- Salary data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Attendance Entry -->
+    <div class="modal" id="attendanceModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Attendance Entry - 15 Dec 2025</h2>
+                <button onclick="closeModal()" class="btn btn-secondary">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Attendance form will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Chart.js Initialization
+        function initializeCharts() {
+            // Salary Distribution Chart
+            const salaryCtx = document.getElementById('salaryChart').getContext('2d');
+            new Chart(salaryCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Total Salary (₹)',
+                        data: [650000, 680000, 720000, 710000, 730000, 750000, 740000, 760000, 780000, 790000, 800000, 784500],
+                        borderColor: '#2563eb',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // Department Chart
+            const deptCtx = document.getElementById('departmentChart').getContext('2d');
+            new Chart(deptCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Production', 'Quality', 'Maintenance', 'Admin', 'Security'],
+                    datasets: [{
+                        data: [85, 25, 15, 20, 11],
+                        backgroundColor: [
+                            '#2563eb',
+                            '#10b981',
+                            '#f59e0b',
+                            '#8b5cf6',
+                            '#ec4899'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        // Modal Functions
+        function openModal() {
+            document.getElementById('attendanceModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('attendanceModal').classList.remove('active');
+        }
+
+        // Tab Switching
+        function openTab(tabName) {
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            event.currentTarget.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // Navigation
+        function navigateTo(section) {
+            const sections = document.querySelectorAll('.main-content > div');
+            sections.forEach(sec => sec.style.display = 'none');
+            
+            const sidebarItems = document.querySelectorAll('.sidebar-item');
+            sidebarItems.forEach(item => item.classList.remove('active'));
+            
+            document.getElementById(section).style.display = 'block';
+            event.currentTarget.classList.add('active');
+        }
+
+        // Form Submission
+        document.getElementById('employeeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Employee saved successfully!');
+            this.reset();
+        });
+
+        // Sample Data for Salary Preview
+        function loadSalaryPreview() {
+            const sampleData = [
+                { name: 'Rajesh Kumar', card: 101, regHrs: 176, otHrs: 12, regAmt: 15840, otAmt: 2160, ded: 0, adv: 2000, total: 18000, payable: 16000 },
+                { name: 'Priya Sharma', card: 102, regHrs: 160, otHrs: 8, regAmt: 14400, otAmt: 1440, ded: 500, adv: 1500, total: 15840, payable: 13840 },
+                { name: 'Amit Patel', card: 103, regHrs: 168, otHrs: 16, regAmt: 15120, otAmt: 2880, ded: 0, adv: 0, total: 18000, payable: 18000 }
+            ];
+
+            const tableBody = document.getElementById('salaryPreview');
+            tableBody.innerHTML = '';
+
+            sampleData.forEach(employee => {
+                const row = `
+                    <tr>
+                        <td><input type="checkbox"></td>
+                        <td>${employee.name}</td>
+                        <td>${employee.card}</td>
+                        <td>${employee.regHrs}</td>
+                        <td>${employee.otHrs}</td>
+                        <td>₹${employee.regAmt.toLocaleString()}</td>
+                        <td>₹${employee.otAmt.toLocaleString()}</td>
+                        <td>₹${employee.ded.toLocaleString()}</td>
+                        <td>₹${employee.adv.toLocaleString()}</td>
+                        <td><strong>₹${employee.total.toLocaleString()}</strong></td>
+                        <td><strong class="text-success">₹${employee.payable.toLocaleString()}</strong></td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            loadSalaryPreview();
+            
+            // Add click handlers to sidebar
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = this.getAttribute('href').substring(1);
+                    navigateTo(target);
+                });
+            });
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(e) {
+            if (e.target.id === 'attendanceModal') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
