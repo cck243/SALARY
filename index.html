@@ -3,2156 +3,1542 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salary Calculation System</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Complete Salary Management System - December 2025</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        :root {
-            --primary-color: #2563eb;
-            --secondary-color: #1e40af;
-            --success-color: #10b981;
-            --warning-color: #f59e0b;
-            --danger-color: #ef4444;
-            --light-color: #f8fafc;
-            --dark-color: #1e293b;
-            --gray-color: #64748b;
-            --border-color: #e2e8f0;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: #f1f5f9;
-            color: var(--dark-color);
-            overflow-x: hidden;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Header Styles */
-        header {
-            background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 0;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: var(--gray-color);
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            transition: all 0.3s;
-        }
-
-        .nav-links a:hover,
-        .nav-links a.active {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .user-menu {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .mr-1 { margin-right: 0.5rem; }
-
-        /* Sidebar Styles */
-        .app-container {
-            display: flex;
-            margin-top: 80px;
-            min-height: calc(100vh - 80px);
-        }
-
-        .sidebar {
-            width: 250px;
-            background: white;
-            height: calc(100vh - 80px);
-            position: fixed;
-            left: 0;
-            top: 80px;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-            padding: 1.5rem;
-            overflow-y: auto;
-            transition: transform 0.3s;
-        }
-
-        .sidebar-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .sidebar-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            color: var(--gray-color);
-            text-decoration: none;
-            border: none;
-            background: none;
-            width: 100%;
-            text-align: left;
-        }
-
-        .sidebar-item:hover,
-        .sidebar-item.active {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .sidebar-item i {
-            width: 20px;
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            margin-left: 250px;
-            padding: 2rem;
-            min-height: calc(100vh - 80px);
-            background-color: #f1f5f9;
-        }
-
-        /* Dashboard Cards */
-        .dashboard-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            transition: transform 0.3s;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .card-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: white;
-        }
-
-        .card-icon.users { background-color: var(--primary-color); }
-        .card-icon.salary { background-color: var(--success-color); }
-        .card-icon.pending { background-color: var(--warning-color); }
-        .card-icon.paid { background-color: var(--secondary-color); }
-
-        .card h3 {
-            font-size: 0.9rem;
-            color: var(--gray-color);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .card .value {
-            font-size: 2rem;
-            font-weight: bold;
-            margin: 0.5rem 0;
-        }
-
-        .card .change {
-            font-size: 0.9rem;
-            color: var(--success-color);
-        }
-
-        /* Charts */
-        .charts-container {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .chart-card {
-            background: white;
-            border-radius: 12px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-
-        .chart-card h2 {
-            margin-bottom: 1rem;
-            color: var(--dark-color);
-        }
-
-        .chart-container {
-            position: relative;
-            height: 300px;
-        }
-
-        /* Tables */
-        .data-table {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-
-        .table-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 1rem 1.5rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        th {
-            background-color: #f8fafc;
-            font-weight: 600;
-            color: var(--dark-color);
-        }
-
-        tr:hover {
-            background-color: #f8fafc;
-        }
-
-        .status {
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            display: inline-block;
-        }
-
-        .status.paid {
-            background-color: #d1fae5;
-            color: var(--success-color);
-        }
-
-        .status.pending {
-            background-color: #fef3c7;
-            color: var(--warning-color);
-        }
-
-        /* Forms */
-        .form-container {
-            background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .form-group label {
-            font-weight: 500;
-            color: var(--dark-color);
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            padding: 0.75rem;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        .form-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
-            margin-top: 2rem;
-        }
-
-        /* Buttons */
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
-
-        .btn-sm {
-            padding: 0.5rem 1rem;
-            font-size: 0.85rem;
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--secondary-color);
-        }
-
-        .btn-secondary {
-            background-color: var(--light-color);
-            color: var(--dark-color);
-            border: 1px solid var(--border-color);
-        }
-
-        .btn-secondary:hover {
-            background-color: #e2e8f0;
-        }
-
-        .btn-success {
-            background-color: var(--success-color);
-            color: white;
-        }
-
-        .btn-success:hover {
-            background-color: #0da271;
-        }
-
-        .btn-danger {
-            background-color: var(--danger-color);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background-color: #dc2626;
-        }
-
-        /* Calendar */
-        .calendar {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 1px;
-            background-color: var(--border-color);
-            border: 1px solid var(--border-color);
-            margin-top: 1rem;
-        }
-
-        .calendar-day {
-            background: white;
-            padding: 1rem;
-            min-height: 100px;
-            position: relative;
-        }
-
-        .calendar-day.header {
-            background-color: #f8fafc;
-            font-weight: 600;
-            text-align: center;
-            min-height: auto;
-            padding: 0.75rem;
-        }
-
-        .day-number {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            font-weight: bold;
-        }
-
-        .attendance-mark {
-            position: absolute;
-            bottom: 0.5rem;
-            left: 0.5rem;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-        }
-
-        .attendance-mark.present { background-color: var(--success-color); }
-        .attendance-mark.absent { background-color: var(--danger-color); }
-        .attendance-mark.overtime { background-color: var(--warning-color); }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 800px;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-body {
-            padding: 1.5rem;
-        }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .tab {
-            padding: 1rem 1.5rem;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
-            background: none;
-            border: none;
-            font-size: 1rem;
-        }
-
-        .tab:hover,
-        .tab.active {
-            border-bottom-color: var(--primary-color);
-            color: var(--primary-color);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* Attendance Grid */
-        .attendance-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .attendance-item {
-            background: white;
-            padding: 1rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        /* Salary Preview */
-        .salary-preview {
-            overflow-x: auto;
-        }
-
-        /* Utility Classes */
-        .text-center { text-align: center; }
-        .text-right { text-align: right; }
-        .text-success { color: var(--success-color); }
-        .text-warning { color: var(--warning-color); }
-        .text-danger { color: var(--danger-color); }
-        .mb-1 { margin-bottom: 0.5rem; }
-        .mb-2 { margin-bottom: 1rem; }
-        .mb-3 { margin-bottom: 1.5rem; }
-        .mt-1 { margin-top: 0.5rem; }
-        .mt-2 { margin-top: 1rem; }
-        .mt-3 { margin-top: 1.5rem; }
-        .w-100 { width: 100%; }
-        .d-none { display: none !important; }
-        .d-flex { display: flex !important; }
-        .d-block { display: block !important; }
-
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .sidebar {
-                width: 200px;
-            }
-            .main-content {
-                margin-left: 200px;
-            }
-            .charts-container {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                width: 280px;
-            }
-            .sidebar.active {
-                transform: translateX(0);
-            }
-            .main-content {
-                margin-left: 0;
-            }
-            .nav-links {
-                display: none;
-            }
-            .mobile-menu-btn {
-                display: block !important;
-            }
-            .table-header {
-                flex-direction: column;
-                gap: 1rem;
-                align-items: flex-start;
-            }
-        }
-
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--primary-color);
-        }
-
-        /* Search Box */
-        .search-box {
-            position: relative;
-            margin-bottom: 1.5rem;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 0.75rem 1rem 0.75rem 2.5rem;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--gray-color);
-        }
-
-        /* Loading Spinner */
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--primary-color);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 2rem auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Toast Notification */
-        .toast {
-            position: fixed;
-            top: 100px;
-            right: 20px;
-            padding: 1rem 1.5rem;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 3000;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transform: translateX(400px);
-            transition: transform 0.3s;
-        }
-
-        .toast.show {
-            transform: translateX(0);
-        }
-
-        .toast.success { border-left: 4px solid var(--success-color); }
-        .toast.error { border-left: 4px solid var(--danger-color); }
-        .toast.warning { border-left: 4px solid var(--warning-color); }
-
-        /* Print Styles */
         @media print {
-            .sidebar, .navbar, .btn, .tabs {
+            .no-print {
                 display: none !important;
             }
-            .main-content {
-                margin-left: 0 !important;
+            .print-full-width {
+                width: 100% !important;
+                max-width: 100% !important;
                 padding: 0 !important;
+                margin: 0 !important;
             }
-            .card {
-                box-shadow: none !important;
-                border: 1px solid #ddd !important;
+            body {
+                background: white !important;
+                font-size: 12px !important;
             }
+            .break-inside-avoid {
+                break-inside: avoid;
+            }
+            .salary-slip-page {
+                page-break-after: always;
+                margin: 20px;
+                padding: 20px;
+                border: 1px solid #ccc;
+            }
+        }
+        
+        .salary-slip-container {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            background: white;
+            padding: 20mm;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        @page {
+            size: A4;
+            margin: 20mm;
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header>
-        <div class="container">
-            <div class="navbar">
-                <button class="mobile-menu-btn" id="mobileMenuBtn">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <a href="#" class="logo" onclick="navigateTo('dashboard')">
-                    <i class="fas fa-calculator"></i>
-                    SalaryCalc Pro
-                </a>
-                <div class="nav-links">
-                    <a href="#" onclick="navigateTo('dashboard')" class="active">Dashboard</a>
-                    <a href="#" onclick="navigateTo('employee-management')">Employees</a>
-                    <a href="#" onclick="navigateTo('attendance-tracker')">Attendance</a>
-                    <a href="#" onclick="navigateTo('salary-calculator')">Salary</a>
-                    <a href="#" onclick="navigateTo('reports')">Reports</a>
-                </div>
-                <div class="user-menu">
-                    <span>Admin User</span>
-                    <i class="fas fa-user-circle" style="font-size: 2rem; color: var(--primary-color);"></i>
-                </div>
-            </div>
-        </div>
-    </header>
+    <div id="root"></div>
 
-    <!-- Toast Notification -->
-    <div class="toast" id="toast"></div>
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+        const { jsPDF } = window.jspdf;
 
-    <!-- Main Application -->
-    <div class="app-container">
-        <!-- Sidebar -->
-        <div class="sidebar" id="sidebar">
-            <div class="sidebar-menu">
-                <button class="sidebar-item active" onclick="navigateTo('dashboard')">
-                    <i class="fas fa-home"></i>
-                    <span>Dashboard</span>
-                </button>
-                <button class="sidebar-item" onclick="navigateTo('employee-management')">
-                    <i class="fas fa-users"></i>
-                    <span>Employee Management</span>
-                </button>
-                <button class="sidebar-item" onclick="navigateTo('attendance-tracker')">
-                    <i class="fas fa-calendar-check"></i>
-                    <span>Attendance Tracker</span>
-                </button>
-                <button class="sidebar-item" onclick="navigateTo('salary-calculator')">
-                    <i class="fas fa-calculator"></i>
-                    <span>Salary Calculator</span>
-                </button>
-                <button class="sidebar-item" onclick="navigateTo('payment-processor')">
-                    <i class="fas fa-money-bill-wave"></i>
-                    <span>Payment Processing</span>
-                </button>
-                <button class="sidebar-item" onclick="navigateTo('reports')">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Reports & Analytics</span>
-                </button>
-                <button class="sidebar-item" onclick="navigateTo('settings')">
-                    <i class="fas fa-cog"></i>
-                    <span>Settings</span>
-                </button>
-            </div>
-        </div>
+        // Embedded employee data
+        const INITIAL_EMPLOYEE_DATA = [...]; // Your existing employee data remains here
 
-        <!-- Main Content -->
-        <div class="main-content" id="mainContent">
-            <!-- Dashboard -->
-            <div id="dashboard" class="section">
-                <h1 class="mb-3">Dashboard</h1>
+        function SalaryApp() {
+            const [employees, setEmployees] = useState(() => {
+                const saved = localStorage.getItem('salaryEmployees');
+                return saved ? JSON.parse(saved) : INITIAL_EMPLOYEE_DATA;
+            });
+            const [searchTerm, setSearchTerm] = useState('');
+            const [selectedEmployee, setSelectedEmployee] = useState(null);
+            const [filterPaid, setFilterPaid] = useState('all');
+            const [filterDepartment, setFilterDepartment] = useState('all');
+            const [showAddForm, setShowAddForm] = useState(false);
+            const [showImportModal, setShowImportModal] = useState(false);
+            const [editMode, setEditMode] = useState(false);
+            const [importStatus, setImportStatus] = useState('');
+            const [showSlipModal, setShowSlipModal] = useState(false);
+            const [selectedSlipEmployee, setSelectedSlipEmployee] = useState(null);
+            const [slipType, setSlipType] = useState('individual'); // 'individual' or 'all'
+            const fileInputRef = useRef(null);
+            
+            // New employee form state
+            const [newEmployee, setNewEmployee] = useState({
+                department: 'Ladies',
+                cardNo: '',
+                name: '',
+                previousDue: 0,
+                overtimeDays: 0,
+                regularDays: 0,
+                overtimeHours: 0,
+                regularHours: 0,
+                hourlyRate: 31.25,
+                deduction: 0,
+                advance: 0,
+                salaryPaid: 0
+            });
+
+            // Save to localStorage whenever employees change
+            useEffect(() => {
+                localStorage.setItem('salaryEmployees', JSON.stringify(employees));
+            }, [employees]);
+
+            const filteredEmployees = employees.filter(emp => {
+                const matchesSearch = emp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                     emp.cardNo.toString().includes(searchTerm);
                 
-                <!-- Quick Stats Cards -->
-                <div class="dashboard-cards">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-icon users">
-                                <i class="fas fa-users"></i>
-                            </div>
-                            <i class="fas fa-ellipsis-h"></i>
-                        </div>
-                        <h3>Total Employees</h3>
-                        <div class="value" id="totalEmployees">156</div>
-                        <div class="change">+12% from last month</div>
-                    </div>
-                    
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-icon salary">
-                                <i class="fas fa-wallet"></i>
-                            </div>
-                            <i class="fas fa-ellipsis-h"></i>
-                        </div>
-                        <h3>This Month Salary</h3>
-                        <div class="value" id="monthSalary">₹7,84,500</div>
-                        <div class="change">+8% from last month</div>
-                    </div>
-                    
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-icon pending">
-                                <i class="fas fa-clock"></i>
-                            </div>
-                            <i class="fas fa-ellipsis-h"></i>
-                        </div>
-                        <h3>Pending Payments</h3>
-                        <div class="value" id="pendingPayments">5</div>
-                        <div class="change">₹42,800 total pending</div>
-                    </div>
-                    
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-icon paid">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <i class="fas fa-ellipsis-h"></i>
-                        </div>
-                        <h3>Paid This Month</h3>
-                        <div class="value" id="paidEmployees">151</div>
-                        <div class="change">₹7,41,700 total paid</div>
-                    </div>
-                </div>
-
-                <!-- Charts Section -->
-                <div class="charts-container">
-                    <div class="chart-card">
-                        <h2>Salary Distribution</h2>
-                        <div class="chart-container">
-                            <canvas id="salaryChart"></canvas>
-                        </div>
-                    </div>
-                    
-                    <div class="chart-card">
-                        <h2>Department Wise</h2>
-                        <div class="chart-container">
-                            <canvas id="departmentChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recent Payments Table -->
-                <div class="data-table">
-                    <div class="table-header">
-                        <h2>Recent Payments</h2>
-                        <button class="btn btn-primary" onclick="exportData()">
-                            <i class="fas fa-download"></i> Export
-                        </button>
-                    </div>
-                    <div class="table-responsive">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Employee</th>
-                                    <th>Card No</th>
-                                    <th>Month</th>
-                                    <th>Amount</th>
-                                    <th>Payment Method</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="recentPaymentsTable">
-                                <!-- Filled by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Employee Management -->
-            <div id="employee-management" class="section d-none">
-                <h1 class="mb-3">Employee Management</h1>
+                const matchesFilter = filterPaid === 'all' ||
+                                     (filterPaid === 'paid' && emp.salaryPaid > 0 && emp.dueNextMonth === 0) ||
+                                     (filterPaid === 'unpaid' && emp.salaryPaid === 0) ||
+                                     (filterPaid === 'partial' && emp.salaryPaid > 0 && emp.dueNextMonth > 0);
                 
-                <div class="tabs">
-                    <button class="tab active" onclick="openTab('employee-list')">Employee List</button>
-                    <button class="tab" onclick="openTab('add-employee')">Add New Employee</button>
-                    <button class="tab" onclick="openTab('bulk-upload')">Bulk Upload</button>
-                </div>
-
-                <div id="employee-list" class="tab-content active">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="searchEmployee" placeholder="Search employees..." onkeyup="searchEmployees()">
-                    </div>
-                    <div class="table-header">
-                        <h2>All Employees (156)</h2>
-                        <div>
-                            <button class="btn btn-secondary mr-1" onclick="filterEmployees()">
-                                <i class="fas fa-filter"></i> Filter
-                            </button>
-                            <button class="btn btn-primary" onclick="openTab('add-employee')">
-                                <i class="fas fa-plus"></i> Add Employee
-                            </button>
-                        </div>
-                    </div>
-                    <div class="table-responsive">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Card No</th>
-                                    <th>Name</th>
-                                    <th>Gender</th>
-                                    <th>Department</th>
-                                    <th>Hourly Rate</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="employeeTable">
-                                <!-- Filled by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div id="add-employee" class="tab-content">
-                    <div class="form-container">
-                        <h2 class="mb-3">Add New Employee</h2>
-                        <form id="employeeForm" onsubmit="saveEmployee(event)">
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label for="cardNo">Card Number *</label>
-                                    <input type="text" id="cardNo" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="employeeName">Full Name *</label>
-                                    <input type="text" id="employeeName" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="gender">Gender</label>
-                                    <select id="gender">
-                                        <option value="male">Male</option>
-                                        <option value="female">Female</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="hourlyRate">Hourly Rate (₹) *</label>
-                                    <input type="number" id="hourlyRate" step="0.01" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="department">Department</label>
-                                    <input type="text" id="department">
-                                </div>
-                                <div class="form-group">
-                                    <label for="joinDate">Join Date</label>
-                                    <input type="date" id="joinDate">
-                                </div>
-                            </div>
-                            <div class="form-actions">
-                                <button type="button" class="btn btn-secondary" onclick="openTab('employee-list')">Cancel</button>
-                                <button type="submit" class="btn btn-primary">Save Employee</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <div id="bulk-upload" class="tab-content">
-                    <div class="form-container">
-                        <h2 class="mb-3">Bulk Upload Employees</h2>
-                        <div class="form-group">
-                            <label>Download Template</label>
-                            <button class="btn btn-secondary w-100" onclick="downloadTemplate()">
-                                <i class="fas fa-download"></i> Download Excel Template
-                            </button>
-                        </div>
-                        <div class="form-group">
-                            <label>Upload Excel File</label>
-                            <input type="file" id="bulkUploadFile" accept=".xlsx,.xls,.csv" class="w-100">
-                        </div>
-                        <div class="form-actions">
-                            <button class="btn btn-primary" onclick="uploadBulkFile()">
-                                <i class="fas fa-upload"></i> Upload and Process
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Attendance Tracker -->
-            <div id="attendance-tracker" class="section d-none">
-                <h1 class="mb-3">Attendance Tracker</h1>
+                const matchesDepartment = filterDepartment === 'all' || emp.department === filterDepartment;
                 
-                <div class="tabs">
-                    <button class="tab active" onclick="openTab('calendar-view')">Calendar View</button>
-                    <button class="tab" onclick="openTab('daily-attendance')">Daily Entry</button>
-                    <button class="tab" onclick="openTab('monthly-summary')">Monthly Summary</button>
-                </div>
+                return matchesSearch && matchesFilter && matchesDepartment;
+            });
 
-                <div id="calendar-view" class="tab-content active">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>December 2025</h3>
-                            <div>
-                                <button class="btn btn-secondary mr-1" onclick="changeMonth(-1)">
-                                    <i class="fas fa-chevron-left"></i>
-                                </button>
-                                <button class="btn btn-secondary" onclick="changeMonth(1)">
-                                    <i class="fas fa-chevron-right"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="calendar" id="attendanceCalendar">
-                            <!-- Generated by JavaScript -->
-                        </div>
-                    </div>
-                </div>
+            const totalSalary = filteredEmployees.reduce((sum, emp) => sum + (parseFloat(emp.totalSalary) || 0), 0);
+            const totalPaid = filteredEmployees.reduce((sum, emp) => sum + (parseFloat(emp.salaryPaid) || 0), 0);
+            const totalDue = filteredEmployees.reduce((sum, emp) => sum + (parseFloat(emp.dueNextMonth) || 0), 0);
 
-                <div id="daily-attendance" class="tab-content">
-                    <div class="form-container">
-                        <h2 class="mb-3">Daily Attendance Entry</h2>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="attendanceDate">Date</label>
-                                <input type="date" id="attendanceDate" value="2025-12-15">
-                            </div>
-                            <div class="form-group">
-                                <label for="selectEmployee">Select Employee</label>
-                                <select id="selectEmployee">
-                                    <!-- Filled by JavaScript -->
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="hoursWorked">Hours Worked</label>
-                                <input type="number" id="hoursWorked" step="0.5" min="0" max="24" value="8">
-                            </div>
-                            <div class="form-group">
-                                <label for="overtimeHours">Overtime Hours</label>
-                                <input type="number" id="overtimeHours" step="0.5" min="0" max="12" value="0">
-                            </div>
-                        </div>
-                        <div class="form-actions">
-                            <button class="btn btn-secondary" onclick="clearAttendanceForm()">Clear</button>
-                            <button class="btn btn-primary" onclick="saveAttendance()">Save Attendance</button>
-                        </div>
-                    </div>
-                </div>
+            const ladiesCount = employees.filter(e => e.department === 'Ladies').length;
+            const gentsCount = employees.filter(e => e.department === 'Gents').length;
 
-                <div id="monthly-summary" class="tab-content">
-                    <div class="data-table">
-                        <div class="table-header">
-                            <h2>Monthly Attendance Summary - December 2025</h2>
-                            <button class="btn btn-primary" onclick="exportAttendance()">
-                                <i class="fas fa-download"></i> Export
-                            </button>
+            const calculateSalary = (emp) => {
+                const totalDays = parseFloat(emp.overtimeDays || 0) + parseFloat(emp.regularDays || 0);
+                const totalHours = parseFloat(emp.overtimeHours || 0) + parseFloat(emp.regularHours || 0);
+                const overtimePay = parseFloat(emp.overtimeHours || 0) * parseFloat(emp.hourlyRate || 0);
+                const regularPay = parseFloat(emp.regularHours || 0) * parseFloat(emp.hourlyRate || 0);
+                const totalSalary = overtimePay + regularPay - parseFloat(emp.deduction || 0) - parseFloat(emp.advance || 0) + parseFloat(emp.previousDue || 0);
+                const dueNextMonth = totalSalary - parseFloat(emp.salaryPaid || 0);
+
+                return {
+                    totalDays,
+                    totalHours,
+                    overtimePay,
+                    regularPay,
+                    totalSalary,
+                    dueNextMonth
+                };
+            };
+
+            const handleFileUpload = (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                setImportStatus('Reading file...');
+                
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        
+                        let importedEmployees = [];
+                        let sheetsProcessed = 0;
+
+                        // Process each sheet
+                        workbook.SheetNames.forEach(sheetName => {
+                            const normalizedSheetName = sheetName.toUpperCase().trim();
+                            // Check for variations of Ladies sheet name
+                            if (normalizedSheetName === 'LEDIES' || normalizedSheetName === 'LADIES' || 
+                                normalizedSheetName === 'GENTS') {
+                                
+                                const worksheet = workbook.Sheets[sheetName];
+                                const sheetData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                                
+                                const department = (normalizedSheetName === 'LEDIES' || normalizedSheetName === 'LADIES') ? 'Ladies' : 'Gents';
+                                
+                                // Process rows starting from row 4 (index 3)
+                                for (let i = 3; i < sheetData.length; i++) {
+                                    const row = sheetData[i];
+                                    
+                                    // Check if row has name (column index 3)
+                                    if (row && row[2] && row[3]) {
+                                        const safeFloat = (val, def = 0) => {
+                                            if (val === null || val === undefined || val === '' || val === '-') return def;
+                                            const num = parseFloat(val);
+                                            return isNaN(num) ? def : num;
+                                        };
+                                        
+                                        const safeString = (val) => {
+                                            return val ? String(val).trim() : '';
+                                        };
+                                        
+                                        const employee = {
+                                            id: `${department[0]}${importedEmployees.filter(e => e.department === department).length + 1}`,
+                                            department: department,
+                                            cardNo: safeString(row[1]),
+                                            slNo: safeString(row[2]),
+                                            name: safeString(row[3]),
+                                            previousDue: safeFloat(row[4]),
+                                            overtimeDays: safeFloat(row[36]),
+                                            regularDays: safeFloat(row[37]),
+                                            totalDays: safeFloat(row[38]),
+                                            overtimeHours: safeFloat(row[39]),
+                                            regularHours: safeFloat(row[40]),
+                                            totalHours: safeFloat(row[41]),
+                                            hourlyRate: safeFloat(row[42], department === 'Ladies' ? 31.25 : 33.33),
+                                            overtimePay: safeFloat(row[43]),
+                                            regularPay: safeFloat(row[44]),
+                                            deduction: safeFloat(row[45]),
+                                            advance: safeFloat(row[46]),
+                                            totalSalary: safeFloat(row[47]),
+                                            salaryPaid: safeFloat(row[48]),
+                                            dueNextMonth: safeFloat(row[49])
+                                        };
+                                        
+                                        importedEmployees.push(employee);
+                                    }
+                                }
+                                sheetsProcessed++;
+                            }
+                        });
+
+                        if (importedEmployees.length > 0) {
+                            setEmployees(importedEmployees);
+                            setImportStatus(`✓ Successfully imported ${importedEmployees.length} employees from ${sheetsProcessed} sheet(s)!`);
+                            setTimeout(() => {
+                                setShowImportModal(false);
+                                setImportStatus('');
+                            }, 2000);
+                        } else {
+                            setImportStatus('❌ No valid employee data found in the Excel file. Please check the format.');
+                        }
+                        
+                    } catch (error) {
+                        console.error('Error processing file:', error);
+                        setImportStatus('❌ Error processing file. Please ensure it matches the required format.');
+                    }
+                };
+                
+                reader.onerror = () => {
+                    setImportStatus('❌ Error reading file. Please try again.');
+                };
+                
+                reader.readAsArrayBuffer(file);
+            };
+
+            const handleAddEmployee = () => {
+                const calculated = calculateSalary(newEmployee);
+                const maxId = Math.max(...employees.map(e => {
+                    const numId = parseInt(e.id.substring(1));
+                    return isNaN(numId) ? 0 : numId;
+                }), 0);
+                
+                const newEmp = {
+                    ...newEmployee,
+                    id: `${newEmployee.department[0]}${maxId + 1}`,
+                    slNo: employees.filter(e => e.department === newEmployee.department).length + 1,
+                    ...calculated
+                };
+
+                setEmployees([...employees, newEmp]);
+                setShowAddForm(false);
+                setNewEmployee({
+                    department: 'Ladies',
+                    cardNo: '',
+                    name: '',
+                    previousDue: 0,
+                    overtimeDays: 0,
+                    regularDays: 0,
+                    overtimeHours: 0,
+                    regularHours: 0,
+                    hourlyRate: 31.25,
+                    deduction: 0,
+                    advance: 0,
+                    salaryPaid: 0
+                });
+            };
+
+            const handleUpdateEmployee = (updatedEmp) => {
+                const calculated = calculateSalary(updatedEmp);
+                const updated = {
+                    ...updatedEmp,
+                    ...calculated
+                };
+                
+                setEmployees(employees.map(emp => 
+                    emp.id === updated.id ? updated : emp
+                ));
+                setSelectedEmployee(null);
+                setEditMode(false);
+            };
+
+            const handleDeleteEmployee = (id) => {
+                if (confirm('Are you sure you want to delete this employee?')) {
+                    setEmployees(employees.filter(emp => emp.id !== id));
+                    setSelectedEmployee(null);
+                }
+            };
+
+            const handlePrint = () => {
+                window.print();
+            };
+
+            const handleExportData = () => {
+                const dataStr = JSON.stringify(employees, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `salary-data-${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+            };
+
+            const handleResetData = () => {
+                if (confirm('Are you sure you want to reset to original data? This will delete all changes.')) {
+                    setEmployees(INITIAL_EMPLOYEE_DATA);
+                    localStorage.removeItem('salaryEmployees');
+                }
+            };
+
+            // New Salary Slip Functions
+            const handlePrintSalarySlip = (employee) => {
+                setSelectedSlipEmployee(employee);
+                setSlipType('individual');
+                setShowSlipModal(true);
+            };
+
+            const handlePrintAllSlips = () => {
+                setSlipType('all');
+                setShowSlipModal(true);
+            };
+
+            const generateIndividualSlip = () => {
+                if (!selectedSlipEmployee) return null;
+                
+                const slipDate = new Date().toLocaleDateString('en-IN', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric'
+                });
+                
+                const netSalary = selectedSlipEmployee.totalSalary;
+                const netPayable = selectedSlipEmployee.salaryPaid;
+                const dueAmount = selectedSlipEmployee.dueNextMonth;
+                
+                return (
+                    <div className="salary-slip-container" id="salary-slip-individual">
+                        {/* Header */}
+                        <div className="text-center mb-8 border-b-2 border-gray-800 pb-4">
+                            <h1 className="text-3xl font-bold text-gray-900">Salary Slip</h1>
+                            <p className="text-gray-600 mt-2">For the month of December 2025</p>
+                            <p className="text-sm text-gray-500">Issued on: {slipDate}</p>
                         </div>
-                        <div class="table-responsive">
-                            <table>
+                        
+                        {/* Company Details */}
+                        <div className="mb-6">
+                            <h2 className="text-xl font-bold text-gray-900 mb-2">ABC Manufacturing Company</h2>
+                            <p className="text-gray-600">Industrial Area, Rourkela, Odisha - 769042</p>
+                            <p className="text-gray-600">Phone: 0661-123456 | Email: accounts@abccompany.in</p>
+                        </div>
+                        
+                        {/* Employee Details */}
+                        <div className="grid grid-cols-2 gap-4 mb-6">
+                            <div className="bg-gray-50 p-4 rounded-lg">
+                                <h3 className="font-bold text-gray-700 mb-2">Employee Information</h3>
+                                <table className="w-full text-sm">
+                                    <tbody>
+                                        <tr>
+                                            <td className="py-1 text-gray-600">Employee Name:</td>
+                                            <td className="py-1 font-semibold">{selectedSlipEmployee.name}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className="py-1 text-gray-600">Employee ID:</td>
+                                            <td className="py-1">{selectedSlipEmployee.id}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className="py-1 text-gray-600">Card No:</td>
+                                            <td className="py-1">{selectedSlipEmployee.cardNo}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className="py-1 text-gray-600">Department:</td>
+                                            <td className="py-1">{selectedSlipEmployee.department}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div className="bg-gray-50 p-4 rounded-lg">
+                                <h3 className="font-bold text-gray-700 mb-2">Salary Details</h3>
+                                <table className="w-full text-sm">
+                                    <tbody>
+                                        <tr>
+                                            <td className="py-1 text-gray-600">Payment Date:</td>
+                                            <td className="py-1">{slipDate}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className="py-1 text-gray-600">Payment Status:</td>
+                                            <td className="py-1 font-semibold">
+                                                {selectedSlipEmployee.salaryPaid === 0 ? (
+                                                    <span className="text-red-600">Unpaid</span>
+                                                ) : selectedSlipEmployee.dueNextMonth > 0 ? (
+                                                    <span className="text-orange-600">Partially Paid</span>
+                                                ) : (
+                                                    <span className="text-green-600">Fully Paid</span>
+                                                )}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td className="py-1 text-gray-600">Net Salary:</td>
+                                            <td className="py-1 font-bold">₹{netSalary.toFixed(2)}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        {/* Salary Breakdown */}
+                        <div className="mb-8">
+                            <h3 className="text-lg font-bold text-gray-900 mb-4 border-b pb-2">Salary Breakdown</h3>
+                            <table className="w-full border-collapse border border-gray-300 text-sm">
                                 <thead>
-                                    <tr>
-                                        <th>Employee</th>
-                                        <th>Card No</th>
-                                        <th>Total Days</th>
-                                        <th>Regular Hours</th>
-                                        <th>Overtime Hours</th>
-                                        <th>Absent Days</th>
-                                        <th>Attendance %</th>
+                                    <tr className="bg-gray-100">
+                                        <th className="border border-gray-300 p-2 text-left">Description</th>
+                                        <th className="border border-gray-300 p-2 text-left">Days</th>
+                                        <th className="border border-gray-300 p-2 text-left">Hours</th>
+                                        <th className="border border-gray-300 p-2 text-left">Rate (₹)</th>
+                                        <th className="border border-gray-300 p-2 text-left">Amount (₹)</th>
                                     </tr>
                                 </thead>
-                                <tbody id="attendanceSummary">
-                                    <!-- Filled by JavaScript -->
+                                <tbody>
+                                    <tr>
+                                        <td className="border border-gray-300 p-2">Previous Due</td>
+                                        <td className="border border-gray-300 p-2">-</td>
+                                        <td className="border border-gray-300 p-2">-</td>
+                                        <td className="border border-gray-300 p-2">-</td>
+                                        <td className="border border-gray-300 p-2">{selectedSlipEmployee.previousDue.toFixed(2)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="border border-gray-300 p-2">Regular Days ({selectedSlipEmployee.regularDays} days)</td>
+                                        <td className="border border-gray-300 p-2">{selectedSlipEmployee.regularDays}</td>
+                                        <td className="border border-gray-300 p-2">{selectedSlipEmployee.regularHours}</td>
+                                        <td className="border border-gray-300 p-2">{selectedSlipEmployee.hourlyRate.toFixed(2)}</td>
+                                        <td className="border border-gray-300 p-2">{selectedSlipEmployee.regularPay.toFixed(2)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="border border-gray-300 p-2">Overtime ({selectedSlipEmployee.overtimeDays} days)</td>
+                                        <td className="border border-gray-300 p-2">{selectedSlipEmployee.overtimeDays}</td>
+                                        <td className="border border-gray-300 p-2">{selectedSlipEmployee.overtimeHours}</td>
+                                        <td className="border border-gray-300 p-2">{selectedSlipEmployee.hourlyRate.toFixed(2)}</td>
+                                        <td className="border border-gray-300 p-2">{selectedSlipEmployee.overtimePay.toFixed(2)}</td>
+                                    </tr>
+                                    <tr className="bg-gray-50 font-bold">
+                                        <td className="border border-gray-300 p-2">Gross Salary</td>
+                                        <td className="border border-gray-300 p-2" colSpan="3"></td>
+                                        <td className="border border-gray-300 p-2">
+                                            {(selectedSlipEmployee.previousDue + selectedSlipEmployee.regularPay + selectedSlipEmployee.overtimePay).toFixed(2)}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td className="border border-gray-300 p-2 text-red-600">Deductions</td>
+                                        <td className="border border-gray-300 p-2 text-red-600">-</td>
+                                        <td className="border border-gray-300 p-2 text-red-600">-</td>
+                                        <td className="border border-gray-300 p-2 text-red-600">-</td>
+                                        <td className="border border-gray-300 p-2 text-red-600">-{selectedSlipEmployee.deduction.toFixed(2)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="border border-gray-300 p-2 text-red-600">Advance Deduction</td>
+                                        <td className="border border-gray-300 p-2 text-red-600">-</td>
+                                        <td className="border border-gray-300 p-2 text-red-600">-</td>
+                                        <td className="border border-gray-300 p-2 text-red-600">-</td>
+                                        <td className="border border-gray-300 p-2 text-red-600">-{selectedSlipEmployee.advance.toFixed(2)}</td>
+                                    </tr>
+                                    <tr className="bg-green-50 font-bold">
+                                        <td className="border border-gray-300 p-2">NET SALARY PAYABLE</td>
+                                        <td className="border border-gray-300 p-2" colSpan="3"></td>
+                                        <td className="border border-gray-300 p-2 text-green-700">{netSalary.toFixed(2)}</td>
+                                    </tr>
+                                    <tr className="bg-blue-50">
+                                        <td className="border border-gray-300 p-2 font-bold">PAYMENTS MADE</td>
+                                        <td className="border border-gray-300 p-2" colSpan="3"></td>
+                                        <td className="border border-gray-300 p-2 font-bold text-blue-700">{selectedSlipEmployee.salaryPaid.toFixed(2)}</td>
+                                    </tr>
+                                    <tr className="bg-orange-50">
+                                        <td className="border border-gray-300 p-2 font-bold">DUE FOR NEXT MONTH</td>
+                                        <td className="border border-gray-300 p-2" colSpan="3"></td>
+                                        <td className="border border-gray-300 p-2 font-bold text-orange-700">{dueAmount.toFixed(2)}</td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Salary Calculator -->
-            <div id="salary-calculator" class="section d-none">
-                <h1 class="mb-3">Salary Calculator</h1>
-                
-                <div class="card mb-3">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Select Month</label>
-                            <input type="month" id="salaryMonth" value="2025-12" onchange="loadSalaryData()">
-                        </div>
-                        <div class="form-group">
-                            <label>Calculation Rules</label>
-                            <select id="calculationRules">
-                                <option value="standard">Standard (8 hrs regular, 1.5x OT)</option>
-                                <option value="custom">Custom Rules</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>&nbsp;</label>
-                            <button class="btn btn-primary w-100" onclick="calculateAllSalaries()">
-                                <i class="fas fa-calculator"></i> Calculate All Salaries
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="data-table">
-                    <div class="table-header">
-                        <h2>Salary Calculation Preview</h2>
-                        <div>
-                            <button class="btn btn-success mr-1" onclick="approveAllSalaries()">
-                                <i class="fas fa-check"></i> Approve All
-                            </button>
-                            <button class="btn btn-primary" onclick="generatePayslips()">
-                                <i class="fas fa-file-pdf"></i> Generate Payslips
-                            </button>
-                        </div>
-                    </div>
-                    <div class="salary-preview">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
-                                    <th>Employee</th>
-                                    <th>Card No</th>
-                                    <th>Reg Hrs</th>
-                                    <th>OT Hrs</th>
-                                    <th>Reg Amt</th>
-                                    <th>OT Amt</th>
-                                    <th>Deductions</th>
-                                    <th>Advances</th>
-                                    <th>Total</th>
-                                    <th>Payable</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="salaryPreview">
-                                <!-- Filled by JavaScript -->
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td colspan="3" class="text-right"><strong>Totals:</strong></td>
-                                    <td id="totalRegHrs">0</td>
-                                    <td id="totalOtHrs">0</td>
-                                    <td id="totalRegAmt">₹0</td>
-                                    <td id="totalOtAmt">₹0</td>
-                                    <td id="totalDeductions">₹0</td>
-                                    <td id="totalAdvances">₹0</td>
-                                    <td id="totalSalary">₹0</td>
-                                    <td id="totalPayable">₹0</td>
-                                    <td></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Payment Processor -->
-            <div id="payment-processor" class="section d-none">
-                <h1 class="mb-3">Payment Processing</h1>
-                <div class="form-container">
-                    <h2 class="mb-3">Process Payments</h2>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Payment Method</label>
-                            <div class="attendance-grid">
-                                <label class="attendance-item">
-                                    <input type="radio" name="paymentMethod" value="cash" checked>
-                                    <i class="fas fa-money-bill-wave"></i> Cash
-                                </label>
-                                <label class="attendance-item">
-                                    <input type="radio" name="paymentMethod" value="bank">
-                                    <i class="fas fa-university"></i> Bank Transfer
-                                </label>
-                                <label class="attendance-item">
-                                    <input type="radio" name="paymentMethod" value="cheque">
-                                    <i class="fas fa-file-invoice"></i> Cheque
-                                </label>
+                        
+                        {/* Summary */}
+                        <div className="mt-8 pt-4 border-t-2 border-gray-300">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <h4 className="font-bold text-gray-700 mb-2">Summary</h4>
+                                    <ul className="text-sm text-gray-600 space-y-1">
+                                        <li>• Total Days Worked: {selectedSlipEmployee.totalDays}</li>
+                                        <li>• Total Hours Worked: {selectedSlipEmployee.totalHours}</li>
+                                        <li>• Hourly Rate: ₹{selectedSlipEmployee.hourlyRate.toFixed(2)}</li>
+                                        <li>• Payment Mode: Bank Transfer / Cash</li>
+                                    </ul>
+                                </div>
+                                <div className="text-right">
+                                    <div className="mb-4">
+                                        <p className="text-gray-600">For ABC Manufacturing Company</p>
+                                        <div className="mt-8">
+                                            <p className="border-t border-gray-300 pt-4 inline-block">
+                                                Authorized Signatory
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label for="paymentDate">Payment Date</label>
-                            <input type="date" id="paymentDate" value="2025-12-20">
-                        </div>
-                        <div class="form-group">
-                            <label for="referenceNumber">Reference Number</label>
-                            <input type="text" id="referenceNumber" placeholder="Auto-generated">
-                        </div>
-                        <div class="form-group">
-                            <label>Selected Employees</label>
-                            <div id="selectedEmployeesList" class="card" style="min-height: 100px; padding: 1rem;">
-                                <!-- Will be populated from salary calculator -->
-                                <p class="text-center text-gray">No employees selected</p>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Total Amount</label>
-                            <input type="text" id="totalPaymentAmount" value="₹0" readonly class="w-100" style="font-size: 1.5rem; font-weight: bold; text-align: center;">
+                        
+                        {/* Footer */}
+                        <div className="mt-8 pt-4 border-t border-gray-300 text-center text-xs text-gray-500">
+                            <p>This is a computer-generated salary slip and does not require a signature.</p>
+                            <p>Confidential Document - For Employee Use Only</p>
                         </div>
                     </div>
-                    <div class="form-actions">
-                        <button class="btn btn-secondary" onclick="clearPaymentForm()">Clear</button>
-                        <button class="btn btn-primary" onclick="processPayment()">
-                            <i class="fas fa-paper-plane"></i> Process Payment
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Reports -->
-            <div id="reports" class="section d-none">
-                <h1 class="mb-3">Reports & Analytics</h1>
-                <div class="tabs">
-                    <button class="tab active" onclick="openTab('salary-report')">Salary Report</button>
-                    <button class="tab" onclick="openTab('attendance-report')">Attendance Report</button>
-                    <button class="tab" onclick="openTab('tax-report')">Tax Report</button>
-                </div>
-
-                <div id="salary-report" class="tab-content active">
-                    <div class="form-container">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>From Date</label>
-                                <input type="month" id="reportFrom" value="2025-12">
-                            </div>
-                            <div class="form-group">
-                                <label>To Date</label>
-                                <input type="month" id="reportTo" value="2025-12">
-                            </div>
-                            <div class="form-group">
-                                <label>Report Type</label>
-                                <select id="reportType">
-                                    <option value="summary">Summary Report</option>
-                                    <option value="detailed">Detailed Report</option>
-                                    <option value="department">Department Wise</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>&nbsp;</label>
-                                <button class="btn btn-primary w-100" onclick="generateReport()">
-                                    <i class="fas fa-chart-bar"></i> Generate Report
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="reportOutput" class="card mt-3" style="min-height: 400px;">
-                        <!-- Report will be displayed here -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Settings -->
-            <div id="settings" class="section d-none">
-                <h1 class="mb-3">Settings</h1>
-                <div class="form-container">
-                    <h2 class="mb-3">System Settings</h2>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Company Name</label>
-                            <input type="text" id="companyName" value="ABC Manufacturing Pvt Ltd">
-                        </div>
-                        <div class="form-group">
-                            <label>Default Hourly Rate</label>
-                            <input type="number" id="defaultHourlyRate" value="31.25">
-                        </div>
-                        <div class="form-group">
-                            <label>Overtime Rate Multiplier</label>
-                            <input type="number" id="otMultiplier" value="1.5" step="0.1">
-                        </div>
-                        <div class="form-group">
-                            <label>Regular Working Hours</label>
-                            <input type="number" id="regularHours" value="8">
-                        </div>
-                        <div class="form-group">
-                            <label>Working Days per Month</label>
-                            <input type="number" id="workingDays" value="26">
-                        </div>
-                    </div>
-                    <div class="form-actions">
-                        <button class="btn btn-primary" onclick="saveSettings()">
-                            <i class="fas fa-save"></i> Save Settings
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal for Employee Details -->
-    <div class="modal" id="employeeModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Employee Details</h2>
-                <button onclick="closeModal('employeeModal')" class="btn btn-secondary">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body" id="employeeModalBody">
-                <!-- Employee details will be loaded here -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal for Salary Details -->
-    <div class="modal" id="salaryModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Salary Details</h2>
-                <button onclick="closeModal('salaryModal')" class="btn btn-secondary">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body" id="salaryModalBody">
-                <!-- Salary details will be loaded here -->
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        // Global variables
-        let employees = [];
-        let attendance = [];
-        let salaryData = [];
-        let selectedEmployees = [];
-        let currentMonth = new Date().getMonth();
-        let currentYear = new Date().getFullYear();
-
-        // Initialize sample data
-        function initializeSampleData() {
-            // Sample employees data
-            employees = [
-                { id: 1, cardNo: '101', name: 'Rajesh Kumar', gender: 'male', department: 'Production', hourlyRate: 31.25, joinDate: '2023-01-15', status: 'active' },
-                { id: 2, cardNo: '102', name: 'Priya Sharma', gender: 'female', department: 'Quality', hourlyRate: 31.25, joinDate: '2023-02-20', status: 'active' },
-                { id: 3, cardNo: '103', name: 'Amit Patel', gender: 'male', department: 'Maintenance', hourlyRate: 33.33, joinDate: '2023-03-10', status: 'active' },
-                { id: 4, cardNo: '104', name: 'Sneha Singh', gender: 'female', department: 'Admin', hourlyRate: 35.00, joinDate: '2023-04-05', status: 'active' },
-                { id: 5, cardNo: '105', name: 'Ravi Verma', gender: 'male', department: 'Security', hourlyRate: 30.00, joinDate: '2023-05-12', status: 'active' }
-            ];
-
-            // Sample attendance data
-            attendance = [
-                { employeeId: 1, date: '2025-12-01', hours: 8, overtime: 2 },
-                { employeeId: 1, date: '2025-12-02', hours: 8, overtime: 1 },
-                { employeeId: 2, date: '2025-12-01', hours: 8, overtime: 0 },
-                { employeeId: 3, date: '2025-12-01', hours: 8, overtime: 3 }
-            ];
-
-            // Sample salary data
-            salaryData = [
-                { employeeId: 1, month: '2025-12', regularHours: 176, overtimeHours: 12, regularAmount: 5500, overtimeAmount: 225, deductions: 0, advances: 2000, total: 7725, payable: 5725 },
-                { employeeId: 2, month: '2025-12', regularHours: 160, overtimeHours: 8, regularAmount: 5000, overtimeAmount: 150, deductions: 500, advances: 1500, total: 6650, payable: 4650 },
-                { employeeId: 3, month: '2025-12', regularHours: 168, overtimeHours: 16, regularAmount: 5600, overtimeAmount: 800, deductions: 0, advances: 0, total: 6400, payable: 6400 }
-            ];
-
-            // Save to localStorage
-            saveToLocalStorage();
-        }
-
-        // Local Storage functions
-        function saveToLocalStorage() {
-            localStorage.setItem('salarySystem_employees', JSON.stringify(employees));
-            localStorage.setItem('salarySystem_attendance', JSON.stringify(attendance));
-            localStorage.setItem('salarySystem_salaryData', JSON.stringify(salaryData));
-        }
-
-        function loadFromLocalStorage() {
-            const savedEmployees = localStorage.getItem('salarySystem_employees');
-            const savedAttendance = localStorage.getItem('salarySystem_attendance');
-            const savedSalaryData = localStorage.getItem('salarySystem_salaryData');
-
-            if (savedEmployees) employees = JSON.parse(savedEmployees);
-            if (savedAttendance) attendance = JSON.parse(savedAttendance);
-            if (savedSalaryData) salaryData = JSON.parse(savedSalaryData);
-
-            if (employees.length === 0) {
-                initializeSampleData();
-            }
-        }
-
-        // Toast notification
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            toast.innerHTML = `
-                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'exclamation-triangle'}"></i>
-                <span>${message}</span>
-            `;
-            toast.className = `toast ${type} show`;
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-
-        // Navigation functions
-        function navigateTo(sectionId) {
-            // Hide all sections
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.add('d-none');
-            });
-            
-            // Show selected section
-            document.getElementById(sectionId).classList.remove('d-none');
-            
-            // Update active nav links
-            document.querySelectorAll('.nav-links a').forEach(link => {
-                link.classList.remove('active');
-            });
-            document.querySelectorAll('.sidebar-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            // Update active state
-            document.querySelector(`[onclick*="${sectionId}"]`).classList.add('active');
-            
-            // Update tab in nav links
-            const navLink = document.querySelector(`.nav-links a[onclick*="${sectionId}"]`);
-            if (navLink) navLink.classList.add('active');
-            
-            // Close mobile sidebar
-            document.getElementById('sidebar').classList.remove('active');
-            
-            // Load section data
-            switch(sectionId) {
-                case 'dashboard':
-                    loadDashboard();
-                    break;
-                case 'employee-management':
-                    loadEmployees();
-                    break;
-                case 'attendance-tracker':
-                    loadAttendanceCalendar();
-                    break;
-                case 'salary-calculator':
-                    loadSalaryData();
-                    break;
-                case 'payment-processor':
-                    loadPaymentProcessor();
-                    break;
-                case 'reports':
-                    loadReports();
-                    break;
-            }
-        }
-
-        // Tab functions
-        function openTab(tabName) {
-            // Hide all tab contents
-            const tabContents = document.querySelectorAll('.tab-content');
-            tabContents.forEach(content => content.classList.remove('active'));
-            
-            // Remove active from all tabs
-            const tabs = document.querySelectorAll('.tab');
-            tabs.forEach(tab => tab.classList.remove('active'));
-            
-            // Show selected tab
-            document.getElementById(tabName).classList.add('active');
-            event.currentTarget.classList.add('active');
-        }
-
-        // Modal functions
-        function openModal(modalId) {
-            document.getElementById(modalId).classList.add('active');
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
-        }
-
-        // Mobile menu
-        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
-            document.getElementById('sidebar').classList.toggle('active');
-        });
-
-        // Dashboard functions
-        function loadDashboard() {
-            updateDashboardStats();
-            loadRecentPayments();
-            initializeCharts();
-        }
-
-        function updateDashboardStats() {
-            const totalEmployees = employees.length;
-            const paidCount = salaryData.filter(s => s.payable > 0).length;
-            const pendingCount = totalEmployees - paidCount;
-            const totalSalary = salaryData.reduce((sum, s) => sum + s.total, 0);
-            
-            document.getElementById('totalEmployees').textContent = totalEmployees;
-            document.getElementById('paidEmployees').textContent = paidCount;
-            document.getElementById('pendingPayments').textContent = pendingCount;
-            document.getElementById('monthSalary').textContent = `₹${totalSalary.toLocaleString()}`;
-        }
-
-        function loadRecentPayments() {
-            const tableBody = document.getElementById('recentPaymentsTable');
-            tableBody.innerHTML = '';
-            
-            salaryData.slice(0, 5).forEach(salary => {
-                const employee = employees.find(e => e.id === salary.employeeId);
-                if (employee) {
-                    const row = `
-                        <tr>
-                            <td>
-                                <strong>${employee.name}</strong><br>
-                                <small>${employee.department}</small>
-                            </td>
-                            <td>${employee.cardNo}</td>
-                            <td>${salary.month}</td>
-                            <td>₹${salary.total.toLocaleString()}</td>
-                            <td>Bank Transfer</td>
-                            <td><span class="status ${salary.payable > 0 ? 'paid' : 'pending'}">${salary.payable > 0 ? 'Paid' : 'Pending'}</span></td>
-                            <td>
-                                <button class="btn btn-secondary btn-sm" onclick="viewSalaryDetails(${employee.id})"><i class="fas fa-eye"></i></button>
-                                <button class="btn btn-secondary btn-sm" onclick="printPayslip(${employee.id})"><i class="fas fa-print"></i></button>
-                            </td>
-                        </tr>
-                    `;
-                    tableBody.innerHTML += row;
-                }
-            });
-        }
-
-        // Chart functions
-        function initializeCharts() {
-            // Destroy existing charts
-            const salaryChart = Chart.getChart('salaryChart');
-            const deptChart = Chart.getChart('departmentChart');
-            if (salaryChart) salaryChart.destroy();
-            if (deptChart) deptChart.destroy();
-            
-            // Salary Distribution Chart
-            const salaryCtx = document.getElementById('salaryChart').getContext('2d');
-            new Chart(salaryCtx, {
-                type: 'line',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                    datasets: [{
-                        label: 'Total Salary (₹)',
-                        data: [650000, 680000, 720000, 710000, 730000, 750000, 740000, 760000, 780000, 790000, 800000, 784500],
-                        borderColor: '#2563eb',
-                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top'
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                callback: function(value) {
-                                    return '₹' + value.toLocaleString();
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-            
-            // Department Chart
-            const deptCtx = document.getElementById('departmentChart').getContext('2d');
-            const deptData = {};
-            employees.forEach(emp => {
-                deptData[emp.department] = (deptData[emp.department] || 0) + 1;
-            });
-            
-            new Chart(deptCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(deptData),
-                    datasets: [{
-                        data: Object.values(deptData),
-                        backgroundColor: [
-                            '#2563eb',
-                            '#10b981',
-                            '#f59e0b',
-                            '#8b5cf6',
-                            '#ec4899',
-                            '#6366f1',
-                            '#14b8a6'
-                        ]
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
-            });
-        }
-
-        // Employee Management functions
-        function loadEmployees() {
-            const tableBody = document.getElementById('employeeTable');
-            tableBody.innerHTML = '';
-            
-            employees.forEach(employee => {
-                const row = `
-                    <tr>
-                        <td>${employee.cardNo}</td>
-                        <td>
-                            <strong>${employee.name}</strong><br>
-                            <small class="text-gray">ID: ${employee.id}</small>
-                        </td>
-                        <td>${employee.gender === 'male' ? 'Male' : 'Female'}</td>
-                        <td>${employee.department}</td>
-                        <td>₹${employee.hourlyRate}</td>
-                        <td><span class="status ${employee.status === 'active' ? 'paid' : 'pending'}">${employee.status}</span></td>
-                        <td>
-                            <button class="btn btn-secondary btn-sm" onclick="viewEmployee(${employee.id})"><i class="fas fa-eye"></i></button>
-                            <button class="btn btn-secondary btn-sm" onclick="editEmployee(${employee.id})"><i class="fas fa-edit"></i></button>
-                            <button class="btn btn-danger btn-sm" onclick="deleteEmployee(${employee.id})"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-                tableBody.innerHTML += row;
-            });
-            
-            // Load employee dropdown for attendance
-            const selectEmployee = document.getElementById('selectEmployee');
-            selectEmployee.innerHTML = '<option value="">Select Employee</option>';
-            employees.forEach(emp => {
-                selectEmployee.innerHTML += `<option value="${emp.id}">${emp.name} (${emp.cardNo})</option>`;
-            });
-        }
-
-        function searchEmployees() {
-            const searchTerm = document.getElementById('searchEmployee').value.toLowerCase();
-            const rows = document.querySelectorAll('#employeeTable tr');
-            
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchTerm) ? '' : 'none';
-            });
-        }
-
-        function saveEmployee(event) {
-            event.preventDefault();
-            
-            const employee = {
-                id: employees.length > 0 ? Math.max(...employees.map(e => e.id)) + 1 : 1,
-                cardNo: document.getElementById('cardNo').value,
-                name: document.getElementById('employeeName').value,
-                gender: document.getElementById('gender').value,
-                hourlyRate: parseFloat(document.getElementById('hourlyRate').value),
-                department: document.getElementById('department').value,
-                joinDate: document.getElementById('joinDate').value,
-                status: 'active'
+                );
             };
-            
-            employees.push(employee);
-            saveToLocalStorage();
-            loadEmployees();
-            openTab('employee-list');
-            showToast('Employee saved successfully!');
-            
-            // Reset form
-            document.getElementById('employeeForm').reset();
-        }
 
-        function viewEmployee(id) {
-            const employee = employees.find(e => e.id === id);
-            if (employee) {
-                document.getElementById('employeeModalBody').innerHTML = `
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Card Number</label>
-                            <input type="text" value="${employee.cardNo}" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label>Name</label>
-                            <input type="text" value="${employee.name}" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label>Gender</label>
-                            <input type="text" value="${employee.gender === 'male' ? 'Male' : 'Female'}" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label>Hourly Rate</label>
-                            <input type="text" value="₹${employee.hourlyRate}" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label>Department</label>
-                            <input type="text" value="${employee.department}" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label>Join Date</label>
-                            <input type="text" value="${employee.joinDate}" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label>Status</label>
-                            <input type="text" value="${employee.status}" readonly>
-                        </div>
-                    </div>
-                    <div class="form-actions mt-3">
-                        <button class="btn btn-primary" onclick="editEmployee(${employee.id}); closeModal('employeeModal')">Edit</button>
-                        <button class="btn btn-secondary" onclick="closeModal('employeeModal')">Close</button>
-                    </div>
-                `;
-                openModal('employeeModal');
-            }
-        }
-
-        function editEmployee(id) {
-            const employee = employees.find(e => e.id === id);
-            if (employee) {
-                document.getElementById('cardNo').value = employee.cardNo;
-                document.getElementById('employeeName').value = employee.name;
-                document.getElementById('gender').value = employee.gender;
-                document.getElementById('hourlyRate').value = employee.hourlyRate;
-                document.getElementById('department').value = employee.department;
-                document.getElementById('joinDate').value = employee.joinDate;
-                openTab('add-employee');
-                showToast('Employee loaded for editing');
-            }
-        }
-
-        function deleteEmployee(id) {
-            if (confirm('Are you sure you want to delete this employee?')) {
-                employees = employees.filter(e => e.id !== id);
-                saveToLocalStorage();
-                loadEmployees();
-                showToast('Employee deleted successfully!');
-            }
-        }
-
-        // Attendance functions
-        function loadAttendanceCalendar() {
-            const calendar = document.getElementById('attendanceCalendar');
-            calendar.innerHTML = '';
-            
-            // Add headers
-            const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            days.forEach(day => {
-                calendar.innerHTML += `<div class="calendar-day header">${day}</div>`;
-            });
-            
-            // Get first day of month
-            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-            
-            // Add empty cells for days before first day
-            for (let i = 0; i < firstDay; i++) {
-                calendar.innerHTML += `<div class="calendar-day"></div>`;
-            }
-            
-            // Get days in month
-            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-            
-            // Add days
-            for (let day = 1; day <= daysInMonth; day++) {
-                const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const dayAttendance = attendance.filter(a => a.date === dateStr);
-                
-                let attendanceHTML = '';
-                if (dayAttendance.length > 0) {
-                    const present = dayAttendance.length;
-                    attendanceHTML = `<span class="text-success">${present} present</span>`;
-                }
-                
-                calendar.innerHTML += `
-                    <div class="calendar-day">
-                        <div class="day-number">${day}</div>
-                        <div class="mt-2">${attendanceHTML}</div>
-                    </div>
-                `;
-            }
-            
-            // Update month display
-            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-            document.querySelector('#calendar-view h3').textContent = `${monthNames[currentMonth]} ${currentYear}`;
-        }
-
-        function changeMonth(delta) {
-            currentMonth += delta;
-            if (currentMonth < 0) {
-                currentMonth = 11;
-                currentYear--;
-            } else if (currentMonth > 11) {
-                currentMonth = 0;
-                currentYear++;
-            }
-            loadAttendanceCalendar();
-        }
-
-        function saveAttendance() {
-            const employeeId = parseInt(document.getElementById('selectEmployee').value);
-            const date = document.getElementById('attendanceDate').value;
-            const hours = parseFloat(document.getElementById('hoursWorked').value);
-            const overtime = parseFloat(document.getElementById('overtimeHours').value);
-            
-            if (!employeeId || !date || isNaN(hours)) {
-                showToast('Please fill all required fields', 'error');
-                return;
-            }
-            
-            // Check if attendance already exists for this date and employee
-            const existingIndex = attendance.findIndex(a => a.employeeId === employeeId && a.date === date);
-            
-            if (existingIndex >= 0) {
-                // Update existing
-                attendance[existingIndex] = { employeeId, date, hours, overtime };
-            } else {
-                // Add new
-                attendance.push({ employeeId, date, hours, overtime });
-            }
-            
-            saveToLocalStorage();
-            showToast('Attendance saved successfully!');
-            clearAttendanceForm();
-            loadAttendanceCalendar();
-        }
-
-        function clearAttendanceForm() {
-            document.getElementById('selectEmployee').value = '';
-            document.getElementById('hoursWorked').value = '8';
-            document.getElementById('overtimeHours').value = '0';
-        }
-
-        // Salary Calculator functions
-        function loadSalaryData() {
-            const month = document.getElementById('salaryMonth').value;
-            const tableBody = document.getElementById('salaryPreview');
-            tableBody.innerHTML = '';
-            
-            let totalRegHrs = 0;
-            let totalOtHrs = 0;
-            let totalRegAmt = 0;
-            let totalOtAmt = 0;
-            let totalDed = 0;
-            let totalAdv = 0;
-            let totalSalary = 0;
-            let totalPayable = 0;
-            
-            employees.forEach(employee => {
-                // Calculate attendance for the month
-                const monthAttendance = attendance.filter(a => {
-                    const attDate = new Date(a.date);
-                    return attDate.getMonth() === parseInt(month.split('-')[1]) - 1 &&
-                           attDate.getFullYear() === parseInt(month.split('-')[0]) &&
-                           a.employeeId === employee.id;
+            const generateAllSlips = () => {
+                const slipDate = new Date().toLocaleDateString('en-IN', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric'
                 });
                 
-                const totalHours = monthAttendance.reduce((sum, a) => sum + a.hours, 0);
-                const overtimeHours = monthAttendance.reduce((sum, a) => sum + (a.overtime || 0), 0);
-                const regularHours = totalHours - overtimeHours;
-                
-                const regularAmount = regularHours * employee.hourlyRate;
-                const overtimeAmount = overtimeHours * employee.hourlyRate * 1.5;
-                const deductions = 0;
-                const advances = 0;
-                const total = regularAmount + overtimeAmount;
-                const payable = total - deductions - advances;
-                
-                totalRegHrs += regularHours;
-                totalOtHrs += overtimeHours;
-                totalRegAmt += regularAmount;
-                totalOtAmt += overtimeAmount;
-                totalDed += deductions;
-                totalAdv += advances;
-                totalSalary += total;
-                totalPayable += payable;
-                
-                const row = `
-                    <tr>
-                        <td><input type="checkbox" value="${employee.id}" onchange="updateSelectedEmployees(this)"></td>
-                        <td>${employee.name}</td>
-                        <td>${employee.cardNo}</td>
-                        <td>${regularHours.toFixed(2)}</td>
-                        <td>${overtimeHours.toFixed(2)}</td>
-                        <td>₹${regularAmount.toFixed(2)}</td>
-                        <td>₹${overtimeAmount.toFixed(2)}</td>
-                        <td>₹${deductions.toFixed(2)}</td>
-                        <td>₹${advances.toFixed(2)}</td>
-                        <td>₹${total.toFixed(2)}</td>
-                        <td><strong class="text-success">₹${payable.toFixed(2)}</strong></td>
-                        <td>
-                            <button class="btn btn-secondary btn-sm" onclick="viewSalaryDetails(${employee.id})"><i class="fas fa-eye"></i></button>
-                        </td>
-                    </tr>
-                `;
-                tableBody.innerHTML += row;
-            });
-            
-            // Update totals
-            document.getElementById('totalRegHrs').textContent = totalRegHrs.toFixed(2);
-            document.getElementById('totalOtHrs').textContent = totalOtHrs.toFixed(2);
-            document.getElementById('totalRegAmt').textContent = `₹${totalRegAmt.toFixed(2)}`;
-            document.getElementById('totalOtAmt').textContent = `₹${totalOtAmt.toFixed(2)}`;
-            document.getElementById('totalDeductions').textContent = `₹${totalDed.toFixed(2)}`;
-            document.getElementById('totalAdvances').textContent = `₹${totalAdv.toFixed(2)}`;
-            document.getElementById('totalSalary').textContent = `₹${totalSalary.toFixed(2)}`;
-            document.getElementById('totalPayable').textContent = `₹${totalPayable.toFixed(2)}`;
-        }
+                return (
+                    <div id="salary-slips-all">
+                        {filteredEmployees.map((employee, index) => (
+                            <div key={employee.id} className="salary-slip-container" style={{ pageBreakAfter: 'always' }}>
+                                {/* Individual slip content similar to generateIndividualSlip */}
+                                <div className="text-center mb-6 border-b-2 border-gray-800 pb-3">
+                                    <h1 className="text-2xl font-bold text-gray-900">Salary Slip - {employee.name}</h1>
+                                    <p className="text-gray-600 mt-1">December 2025 | Slip #{index + 1}</p>
+                                </div>
+                                
+                                <div className="grid grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                        <p className="text-sm"><strong>Employee:</strong> {employee.name}</p>
+                                        <p className="text-sm"><strong>ID:</strong> {employee.id} | <strong>Card:</strong> {employee.cardNo}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-sm"><strong>Department:</strong> {employee.department}</p>
+                                        <p className="text-sm"><strong>Status:</strong> 
+                                            {employee.salaryPaid === 0 ? ' Unpaid' : employee.dueNextMonth > 0 ? ' Partial' : ' Paid'}
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <table className="w-full border-collapse border border-gray-300 text-xs mb-4">
+                                    <thead>
+                                        <tr className="bg-gray-100">
+                                            <th className="border border-gray-300 p-1">Description</th>
+                                            <th className="border border-gray-300 p-1">Days</th>
+                                            <th className="border border-gray-300 p-1">Hours</th>
+                                            <th className="border border-gray-300 p-1">Rate</th>
+                                            <th className="border border-gray-300 p-1">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td className="border border-gray-300 p-1">Previous Due</td>
+                                            <td className="border border-gray-300 p-1">-</td>
+                                            <td className="border border-gray-300 p-1">-</td>
+                                            <td className="border border-gray-300 p-1">-</td>
+                                            <td className="border border-gray-300 p-1">{employee.previousDue.toFixed(2)}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className="border border-gray-300 p-1">Regular</td>
+                                            <td className="border border-gray-300 p-1">{employee.regularDays}</td>
+                                            <td className="border border-gray-300 p-1">{employee.regularHours}</td>
+                                            <td className="border border-gray-300 p-1">{employee.hourlyRate.toFixed(2)}</td>
+                                            <td className="border border-gray-300 p-1">{employee.regularPay.toFixed(2)}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className="border border-gray-300 p-1">Overtime</td>
+                                            <td className="border border-gray-300 p-1">{employee.overtimeDays}</td>
+                                            <td className="border border-gray-300 p-1">{employee.overtimeHours}</td>
+                                            <td className="border border-gray-300 p-1">{employee.hourlyRate.toFixed(2)}</td>
+                                            <td className="border border-gray-300 p-1">{employee.overtimePay.toFixed(2)}</td>
+                                        </tr>
+                                        <tr className="bg-gray-50 font-bold">
+                                            <td className="border border-gray-300 p-1">Gross</td>
+                                            <td className="border border-gray-300 p-1" colSpan="3"></td>
+                                            <td className="border border-gray-300 p-1">
+                                                {(employee.previousDue + employee.regularPay + employee.overtimePay).toFixed(2)}
+                                            </td>
+                                        </tr>
+                                        <tr className="text-red-600">
+                                            <td className="border border-gray-300 p-1">Deductions</td>
+                                            <td className="border border-gray-300 p-1" colSpan="3"></td>
+                                            <td className="border border-gray-300 p-1">-{employee.deduction.toFixed(2)}</td>
+                                        </tr>
+                                        <tr className="text-red-600">
+                                            <td className="border border-gray-300 p-1">Advance</td>
+                                            <td className="border border-gray-300 p-1" colSpan="3"></td>
+                                            <td className="border border-gray-300 p-1">-{employee.advance.toFixed(2)}</td>
+                                        </tr>
+                                        <tr className="bg-green-50 font-bold">
+                                            <td className="border border-gray-300 p-1">NET SALARY</td>
+                                            <td className="border border-gray-300 p-1" colSpan="3"></td>
+                                            <td className="border border-gray-300 p-1">{employee.totalSalary.toFixed(2)}</td>
+                                        </tr>
+                                        <tr className="bg-blue-50">
+                                            <td className="border border-gray-300 p-1">PAID</td>
+                                            <td className="border border-gray-300 p-1" colSpan="3"></td>
+                                            <td className="border border-gray-300 p-1">{employee.salaryPaid.toFixed(2)}</td>
+                                        </tr>
+                                        <tr className="bg-orange-50">
+                                            <td className="border border-gray-300 p-1">DUE NEXT</td>
+                                            <td className="border border-gray-300 p-1" colSpan="3"></td>
+                                            <td className="border border-gray-300 p-1">{employee.dueNextMonth.toFixed(2)}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                
+                                <div className="text-xs text-center text-gray-500 mt-4">
+                                    <p>Generated on {slipDate} | ABC Manufacturing Company</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                );
+            };
 
-        function calculateAllSalaries() {
-            // Recalculate all salaries based on attendance
-            salaryData = [];
-            
-            const month = document.getElementById('salaryMonth').value;
-            employees.forEach(employee => {
-                const monthAttendance = attendance.filter(a => {
-                    const attDate = new Date(a.date);
-                    return attDate.getMonth() === parseInt(month.split('-')[1]) - 1 &&
-                           attDate.getFullYear() === parseInt(month.split('-')[0]) &&
-                           a.employeeId === employee.id;
+            const downloadSlipAsPDF = async () => {
+                const element = slipType === 'individual' 
+                    ? document.getElementById('salary-slip-individual')
+                    : document.getElementById('salary-slips-all');
+                
+                if (!element) return;
+
+                const canvas = await html2canvas(element, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: '#ffffff'
                 });
-                
-                const totalHours = monthAttendance.reduce((sum, a) => sum + a.hours, 0);
-                const overtimeHours = monthAttendance.reduce((sum, a) => sum + (a.overtime || 0), 0);
-                const regularHours = totalHours - overtimeHours;
-                
-                salaryData.push({
-                    employeeId: employee.id,
-                    month: month,
-                    regularHours: regularHours,
-                    overtimeHours: overtimeHours,
-                    regularAmount: regularHours * employee.hourlyRate,
-                    overtimeAmount: overtimeHours * employee.hourlyRate * 1.5,
-                    deductions: 0,
-                    advances: 0,
-                    total: regularHours * employee.hourlyRate + overtimeHours * employee.hourlyRate * 1.5,
-                    payable: regularHours * employee.hourlyRate + overtimeHours * employee.hourlyRate * 1.5
+
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
                 });
-            });
-            
-            saveToLocalStorage();
-            loadSalaryData();
-            showToast('All salaries calculated successfully!');
-        }
 
-        function toggleSelectAll() {
-            const selectAll = document.getElementById('selectAll');
-            const checkboxes = document.querySelectorAll('#salaryPreview input[type="checkbox"]');
-            checkboxes.forEach(cb => cb.checked = selectAll.checked);
-            updateSelectedEmployees();
-        }
+                const imgWidth = 210;
+                const imgHeight = canvas.height * imgWidth / canvas.width;
+                
+                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+                
+                const fileName = slipType === 'individual'
+                    ? `salary-slip-${selectedSlipEmployee.name}-${new Date().toISOString().split('T')[0]}.pdf`
+                    : `all-salary-slips-${new Date().toISOString().split('T')[0]}.pdf`;
+                
+                pdf.save(fileName);
+            };
 
-        function updateSelectedEmployees(checkbox) {
-            selectedEmployees = [];
-            const checkboxes = document.querySelectorAll('#salaryPreview input[type="checkbox"]:checked');
-            checkboxes.forEach(cb => {
-                selectedEmployees.push(parseInt(cb.value));
-            });
-            
-            // Update payment processor
-            loadPaymentProcessor();
-        }
+            const printSlip = () => {
+                const element = slipType === 'individual'
+                    ? document.getElementById('salary-slip-individual')
+                    : document.getElementById('salary-slips-all');
+                
+                if (!element) return;
 
-        function viewSalaryDetails(employeeId) {
-            const employee = employees.find(e => e.id === employeeId);
-            const salary = salaryData.find(s => s.employeeId === employeeId);
-            
-            if (employee && salary) {
-                document.getElementById('salaryModalBody').innerHTML = `
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Employee</label>
-                            <input type="text" value="${employee.name} (${employee.cardNo})" readonly>
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write(`
+                    <html>
+                    <head>
+                        <title>Salary Slip${slipType === 'all' ? 's' : ''} - December 2025</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+                            @page { size: A4; margin: 20mm; }
+                            .salary-slip-container { width: 210mm; min-height: 297mm; margin: 0 auto; }
+                        </style>
+                    </head>
+                    <body>
+                        ${element.outerHTML}
+                    </body>
+                    </html>
+                `);
+                printWindow.document.close();
+                printWindow.focus();
+                setTimeout(() => {
+                    printWindow.print();
+                    printWindow.close();
+                }, 500);
+            };
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-4 md:p-6">
+                    <div className="max-w-7xl mx-auto print-full-width">
+                        {/* Header */}
+                        <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 mb-6 break-inside-avoid">
+                            <div className="flex justify-between items-start mb-4">
+                                <div>
+                                    <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                                        Complete Salary Management System
+                                    </h1>
+                                    <p className="text-gray-600">December 2025 - All Departments</p>
+                                </div>
+                                <div className="no-print flex gap-2 flex-wrap">
+                                    <button
+                                        onClick={() => setShowImportModal(true)}
+                                        className="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition flex items-center gap-2"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                        </svg>
+                                        Import Excel
+                                    </button>
+                                    <button
+                                        onClick={() => setShowAddForm(true)}
+                                        className="px-4 py-2 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition flex items-center gap-2"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                        </svg>
+                                        Add Employee
+                                    </button>
+                                    <button
+                                        onClick={handlePrintAllSlips}
+                                        className="px-4 py-2 bg-teal-600 text-white rounded-lg font-medium hover:bg-teal-700 transition flex items-center gap-2"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        Print All Slips
+                                    </button>
+                                    <button
+                                        onClick={handlePrint}
+                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition flex items-center gap-2"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                                        </svg>
+                                        Print Report
+                                    </button>
+                                    <button
+                                        onClick={handleExportData}
+                                        className="px-4 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition flex items-center gap-2"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                        </svg>
+                                        Export Data
+                                    </button>
+                                    <button
+                                        onClick={handleResetData}
+                                        className="px-4 py-2 bg-red-600 text-white rounded-lg font-medium hover:bg-red-700 transition flex items-center gap-2"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                        </svg>
+                                        Reset
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            {/* Summary Cards */}
+                            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 mt-6">
+                                <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-4 md:p-5 text-white break-inside-avoid">
+                                    <p className="text-blue-100 text-xs md:text-sm mb-1">Total Employees</p>
+                                    <p className="text-2xl md:text-3xl font-bold">{filteredEmployees.length}</p>
+                                    <p className="text-xs text-blue-100 mt-1">L: {ladiesCount} | G: {gentsCount}</p>
+                                </div>
+                                <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-4 md:p-5 text-white break-inside-avoid">
+                                    <p className="text-green-100 text-xs md:text-sm mb-1">Total Salary</p>
+                                    <p className="text-xl md:text-3xl font-bold">₹{totalSalary.toFixed(0)}</p>
+                                </div>
+                                <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-4 md:p-5 text-white break-inside-avoid">
+                                    <p className="text-purple-100 text-xs md:text-sm mb-1">Total Paid</p>
+                                    <p className="text-xl md:text-3xl font-bold">₹{totalPaid.toFixed(0)}</p>
+                                </div>
+                                <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl p-4 md:p-5 text-white break-inside-avoid">
+                                    <p className="text-orange-100 text-xs md:text-sm mb-1">Total Due</p>
+                                    <p className="text-xl md:text-3xl font-bold">₹{totalDue.toFixed(0)}</p>
+                                </div>
+                                <div className="bg-gradient-to-br from-pink-500 to-pink-600 rounded-xl p-4 md:p-5 text-white break-inside-avoid">
+                                    <p className="text-pink-100 text-xs md:text-sm mb-1">Payment Rate</p>
+                                    <p className="text-xl md:text-3xl font-bold">
+                                        {totalSalary > 0 ? ((totalPaid / totalSalary) * 100).toFixed(0) : 0}%
+                                    </p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>Month</label>
-                            <input type="text" value="${salary.month}" readonly>
+
+                        {/* Search and Filter */}
+                        <div className="bg-white rounded-2xl shadow-xl p-4 md:p-6 mb-6 no-print">
+                            <div className="flex flex-col gap-3">
+                                <input
+                                    type="text"
+                                    placeholder="Search by name or card number..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                />
+                                <div className="flex gap-2 overflow-x-auto">
+                                    <select
+                                        value={filterDepartment}
+                                        onChange={(e) => setFilterDepartment(e.target.value)}
+                                        className="px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-500"
+                                    >
+                                        <option value="all">All Departments</option>
+                                        <option value="Ladies">Ladies</option>
+                                        <option value="Gents">Gents</option>
+                                    </select>
+                                    <button
+                                        onClick={() => setFilterPaid('all')}
+                                        className={`px-4 md:px-6 py-2 md:py-3 rounded-lg font-medium transition whitespace-nowrap ${
+                                            filterPaid === 'all' 
+                                            ? 'bg-purple-600 text-white' 
+                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        }`}
+                                    >
+                                        All
+                                    </button>
+                                    <button
+                                        onClick={() => setFilterPaid('paid')}
+                                        className={`px-4 md:px-6 py-2 md:py-3 rounded-lg font-medium transition whitespace-nowrap ${
+                                            filterPaid === 'paid' 
+                                            ? 'bg-green-600 text-white' 
+                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        }`}
+                                    >
+                                        Paid
+                                    </button>
+                                    <button
+                                        onClick={() => setFilterPaid('unpaid')}
+                                        className={`px-4 md:px-6 py-2 md:py-3 rounded-lg font-medium transition whitespace-nowrap ${
+                                            filterPaid === 'unpaid' 
+                                            ? 'bg-red-600 text-white' 
+                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        }`}
+                                    >
+                                        Unpaid
+                                    </button>
+                                    <button
+                                        onClick={() => setFilterPaid('partial')}
+                                        className={`px-4 md:px-6 py-2 md:py-3 rounded-lg font-medium transition whitespace-nowrap ${
+                                            filterPaid === 'partial' 
+                                            ? 'bg-orange-600 text-white' 
+                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        }`}
+                                    >
+                                        Partial
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>Regular Hours</label>
-                            <input type="text" value="${salary.regularHours}" readonly>
+
+                        {/* Employee Table */}
+                        <div className="bg-white rounded-2xl shadow-xl overflow-hidden break-inside-avoid">
+                            <div className="overflow-x-auto">
+                                <table className="w-full">
+                                    <thead className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+                                        <tr>
+                                            <th className="px-3 md:px-6 py-3 md:py-4 text-left text-xs md:text-sm font-semibold">Dept</th>
+                                            <th className="px-3 md:px-6 py-3 md:py-4 text-left text-xs md:text-sm font-semibold">Card</th>
+                                            <th className="px-3 md:px-6 py-3 md:py-4 text-left text-xs md:text-sm font-semibold">Name</th>
+                                            <th className="px-3 md:px-6 py-3 md:py-4 text-right text-xs md:text-sm font-semibold">Days</th>
+                                            <th className="px-3 md:px-6 py-3 md:py-4 text-right text-xs md:text-sm font-semibold">Salary</th>
+                                            <th className="px-3 md:px-6 py-3 md:py-4 text-right text-xs md:text-sm font-semibold">Paid</th>
+                                            <th className="px-3 md:px-6 py-3 md:py-4 text-right text-xs md:text-sm font-semibold">Due</th>
+                                            <th className="px-3 md:px-6 py-3 md:py-4 text-center text-xs md:text-sm font-semibold">Status</th>
+                                            <th className="px-3 md:px-6 py-3 md:py-4 text-center text-xs md:text-sm font-semibold no-print">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-200">
+                                        {filteredEmployees.map((emp) => (
+                                            <tr key={emp.id} className="hover:bg-gray-50 transition break-inside-avoid">
+                                                <td className="px-3 md:px-6 py-3 md:py-4 text-xs md:text-sm">
+                                                    <span className={`px-2 py-1 rounded text-xs font-semibold ${
+                                                        emp.department === 'Ladies' 
+                                                        ? 'bg-pink-100 text-pink-800' 
+                                                        : 'bg-blue-100 text-blue-800'
+                                                    }`}>
+                                                        {emp.department[0]}
+                                                    </span>
+                                                </td>
+                                                <td className="px-3 md:px-6 py-3 md:py-4 text-xs md:text-sm text-gray-900">{emp.cardNo}</td>
+                                                <td className="px-3 md:px-6 py-3 md:py-4 text-xs md:text-sm font-medium text-gray-900">{emp.name}</td>
+                                                <td className="px-3 md:px-6 py-3 md:py-4 text-xs md:text-sm text-gray-700 text-right">{emp.totalDays || 0}</td>
+                                                <td className="px-3 md:px-6 py-3 md:py-4 text-xs md:text-sm font-semibold text-gray-900 text-right">
+                                                    ₹{parseFloat(emp.totalSalary || 0).toFixed(2)}
+                                                </td>
+                                                <td className="px-3 md:px-6 py-3 md:py-4 text-xs md:text-sm text-green-600 font-medium text-right">
+                                                    ₹{parseFloat(emp.salaryPaid || 0).toFixed(2)}
+                                                </td>
+                                                <td className="px-3 md:px-6 py-3 md:py-4 text-xs md:text-sm text-orange-600 font-medium text-right">
+                                                    ₹{parseFloat(emp.dueNextMonth || 0).toFixed(2)}
+                                                </td>
+                                                <td className="px-3 md:px-6 py-3 md:py-4 text-center">
+                                                    {emp.salaryPaid === 0 ? (
+                                                        <span className="px-2 md:px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">
+                                                            Unpaid
+                                                        </span>
+                                                    ) : emp.dueNextMonth > 0 ? (
+                                                        <span className="px-2 md:px-3 py-1 rounded-full text-xs font-semibold bg-orange-100 text-orange-800">
+                                                            Partial
+                                                        </span>
+                                                    ) : (
+                                                        <span className="px-2 md:px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">
+                                                            Paid
+                                                        </span>
+                                                    )}
+                                                </td>
+                                                <td className="px-3 md:px-6 py-3 md:py-4 text-center no-print">
+                                                    <button
+                                                        onClick={() => handlePrintSalarySlip(emp)}
+                                                        className="text-teal-600 hover:text-teal-800 font-medium text-xs md:text-sm mr-2"
+                                                    >
+                                                        Slip
+                                                    </button>
+                                                    <button
+                                                        onClick={() => {
+                                                            setSelectedEmployee(emp);
+                                                            setEditMode(false);
+                                                        }}
+                                                        className="text-purple-600 hover:text-purple-800 font-medium text-xs md:text-sm mr-2"
+                                                    >
+                                                        View
+                                                    </button>
+                                                    <button
+                                                        onClick={() => {
+                                                            setSelectedEmployee(emp);
+                                                            setEditMode(true);
+                                                        }}
+                                                        className="text-blue-600 hover:text-blue-800 font-medium text-xs md:text-sm mr-2"
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDeleteEmployee(emp.id)}
+                                                        className="text-red-600 hover:text-red-800 font-medium text-xs md:text-sm"
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                    <tfoot className="bg-gray-50 font-bold">
+                                        <tr>
+                                            <td colSpan="4" className="px-3 md:px-6 py-4 text-right text-sm md:text-base">TOTAL:</td>
+                                            <td className="px-3 md:px-6 py-4 text-right text-sm md:text-base">₹{totalSalary.toFixed(2)}</td>
+                                            <td className="px-3 md:px-6 py-4 text-right text-sm md:text-base text-green-600">₹{totalPaid.toFixed(2)}</td>
+                                            <td className="px-3 md:px-6 py-4 text-right text-sm md:text-base text-orange-600">₹{totalDue.toFixed(2)}</td>
+                                            <td colSpan="2"></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            
+                            {filteredEmployees.length === 0 && (
+                                <div className="text-center py-12 no-print">
+                                    <p className="text-gray-500 text-lg">No employees found</p>
+                                </div>
+                            )}
                         </div>
-                        <div class="form-group">
-                            <label>Overtime Hours</label>
-                            <input type="text" value="${salary.overtimeHours}" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label>Regular Amount</label>
-                            <input type="text" value="₹${salary.regularAmount.toFixed(2)}" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label>Overtime Amount</label>
-                            <input type="text" value="₹${salary.overtimeAmount.toFixed(2)}" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label>Deductions</label>
-                            <input type="text" value="₹${salary.deductions.toFixed(2)}" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label>Advances</label>
-                            <input type="text" value="₹${salary.advances.toFixed(2)}" readonly>
-                        </div>
-                        <div class="form-group">
-                            <label>Total Salary</label>
-                            <input type="text" value="₹${salary.total.toFixed(2)}" readonly style="font-weight: bold;">
-                        </div>
-                        <div class="form-group">
-                            <label>Net Payable</label>
-                            <input type="text" value="₹${salary.payable.toFixed(2)}" readonly style="font-weight: bold; color: var(--success-color);">
+
+                        {/* Print Footer */}
+                        <div className="hidden print:block mt-8 pt-4 border-t-2 border-gray-300">
+                            <p className="text-sm text-gray-600">Printed on: {new Date().toLocaleString()}</p>
+                            <p className="text-sm text-gray-600">Complete Salary Management System - December 2025</p>
                         </div>
                     </div>
-                    <div class="form-actions mt-3">
-                        <button class="btn btn-primary" onclick="printPayslip(${employee.id})"><i class="fas fa-print"></i> Print Payslip</button>
-                        <button class="btn btn-secondary" onclick="closeModal('salaryModal')">Close</button>
-                    </div>
-                `;
-                openModal('salaryModal');
-            }
-        }
 
-        // Payment Processor functions
-        function loadPaymentProcessor() {
-            const selectedList = document.getElementById('selectedEmployeesList');
-            const totalAmount = document.getElementById('totalPaymentAmount');
-            
-            if (selectedEmployees.length === 0) {
-                selectedList.innerHTML = '<p class="text-center text-gray">No employees selected</p>';
-                totalAmount.value = '₹0';
-                return;
-            }
-            
-            let total = 0;
-            let listHTML = '<div class="attendance-grid">';
-            
-            selectedEmployees.forEach(empId => {
-                const employee = employees.find(e => e.id === empId);
-                const salary = salaryData.find(s => s.employeeId === empId);
-                
-                if (employee && salary) {
-                    total += salary.payable;
-                    listHTML += `
-                        <div class="attendance-item">
-                            <strong>${employee.name}</strong><br>
-                            <small>Card: ${employee.cardNo}</small><br>
-                            <span class="text-success">₹${salary.payable.toFixed(2)}</span>
+                    {/* Import Excel Modal */}
+                    {showImportModal && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 no-print">
+                            <div className="bg-white rounded-2xl max-w-2xl w-full">
+                                <div className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white p-6 rounded-t-2xl">
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <h2 className="text-2xl font-bold">Import Excel File</h2>
+                                            <p className="text-indigo-100 mt-2">Upload salary data from Excel file</p>
+                                        </div>
+                                        <button
+                                            onClick={() => {
+                                                setShowImportModal(false);
+                                                setImportStatus('');
+                                            }}
+                                            className="text-white hover:text-gray-200 text-3xl leading-none"
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div className="p-6">
+                                    <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+                                        <h3 className="font-semibold text-blue-900 mb-2">Required Format:</h3>
+                                        <ul className="text-sm text-blue-800 space-y-1">
+                                            <li>• Excel file (.xlsx or .xls)</li>
+                                            <li>• Sheets named "LEDIES" or "LADIES" and/or "GENTS"</li>
+                                            <li>• Same column structure as your original salary file</li>
+                                            <li>• Data starting from row 4</li>
+                                            <li>• Make sure the sheet names match exactly</li>
+                                        </ul>
+                                    </div>
+
+                                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                                        <input
+                                            ref={fileInputRef}
+                                            type="file"
+                                            accept=".xlsx,.xls"
+                                            onChange={handleFileUpload}
+                                            className="hidden"
+                                        />
+                                        <svg className="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                        </svg>
+                                        <button
+                                            onClick={() => fileInputRef.current?.click()}
+                                            className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition"
+                                        >
+                                            Choose Excel File
+                                        </button>
+                                        <p className="text-sm text-gray-500 mt-2">or drag and drop</p>
+                                    </div>
+
+                                    {importStatus && (
+                                        <div className={`mt-4 p-4 rounded-lg ${
+                                            importStatus.includes('✓') 
+                                            ? 'bg-green-50 text-green-800 border border-green-200' 
+                                            : importStatus.includes('❌')
+                                            ? 'bg-red-50 text-red-800 border border-red-200'
+                                            : 'bg-blue-50 text-blue-800 border border-blue-200'
+                                        }`}>
+                                            <p className="font-medium">{importStatus}</p>
+                                        </div>
+                                    )}
+
+                                    <div className="flex gap-3 mt-6">
+                                        <button
+                                            onClick={() => {
+                                                setShowImportModal(false);
+                                                setImportStatus('');
+                                            }}
+                                            className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-400 transition"
+                                        >
+                                            Close
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    `;
+                    )}
+
+                    {/* Salary Slip Modal */}
+                    {showSlipModal && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 no-print overflow-y-auto">
+                            <div className="bg-white rounded-2xl max-w-6xl w-full my-8">
+                                <div className="bg-gradient-to-r from-teal-600 to-blue-600 text-white p-6 rounded-t-2xl">
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <h2 className="text-2xl font-bold">
+                                                {slipType === 'individual' ? 'Salary Slip' : 'All Salary Slips'}
+                                            </h2>
+                                            <p className="text-white/80 mt-1">
+                                                {slipType === 'individual' 
+                                                    ? `For: ${selectedSlipEmployee?.name}` 
+                                                    : `Total: ${filteredEmployees.length} employees`}
+                                            </p>
+                                        </div>
+                                        <button
+                                            onClick={() => setShowSlipModal(false)}
+                                            className="text-white hover:text-gray-200 text-3xl leading-none"
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div className="p-6">
+                                    <div className="no-print flex gap-3 mb-6">
+                                        <button
+                                            onClick={downloadSlipAsPDF}
+                                            className="bg-teal-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-teal-700 transition flex items-center gap-2"
+                                        >
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                            Download as PDF
+                                        </button>
+                                        <button
+                                            onClick={printSlip}
+                                            className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition flex items-center gap-2"
+                                        >
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                                            </svg>
+                                            Print Slip{slipType === 'all' ? 's' : ''}
+                                        </button>
+                                        <button
+                                            onClick={() => setShowSlipModal(false)}
+                                            className="bg-gray-300 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-400 transition"
+                                        >
+                                            Close
+                                        </button>
+                                    </div>
+                                    
+                                    <div className="overflow-auto max-h-[60vh]">
+                                        {slipType === 'individual' ? generateIndividualSlip() : generateAllSlips()}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Add Employee Modal */}
+                    {showAddForm && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 no-print overflow-y-auto">
+                            <div className="bg-white rounded-2xl max-w-2xl w-full my-8">
+                                <div className="bg-gradient-to-r from-green-600 to-emerald-600 text-white p-6 rounded-t-2xl">
+                                    <div className="flex justify-between items-start">
+                                        <h2 className="text-2xl font-bold">Add New Employee</h2>
+                                        <button
+                                            onClick={() => setShowAddForm(false)}
+                                            className="text-white hover:text-gray-200 text-3xl leading-none"
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div className="p-6 max-h-[70vh] overflow-y-auto">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="col-span-2">
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Department</label>
+                                            <select
+                                                value={newEmployee.department}
+                                                onChange={(e) => setNewEmployee({...newEmployee, department: e.target.value})}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                                            >
+                                                <option value="Ladies">Ladies</option>
+                                                <option value="Gents">Gents</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Card No</label>
+                                            <input
+                                                type="text"
+                                                value={newEmployee.cardNo}
+                                                onChange={(e) => setNewEmployee({...newEmployee, cardNo: e.target.value})}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                                            />
+                                        </div>
+                                        
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Name *</label>
+                                            <input
+                                                type="text"
+                                                value={newEmployee.name}
+                                                onChange={(e) => setNewEmployee({...newEmployee, name: e.target.value})}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                                                required
+                                            />
+                                        </div>
+                                        
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Previous Due (₹)</label>
+                                            <input
+                                                type="number"
+                                                step="0.01"
+                                                value={newEmployee.previousDue}
+                                                onChange={(e) => setNewEmployee({...newEmployee, previousDue: parseFloat(e.target.value) || 0})}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                                            />
+                                        </div>
+                                        
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Hourly Rate (₹)</label>
+                                            <input
+                                                type="number"
+                                                step="0.01"
+                                                value={newEmployee.hourlyRate}
+                                                onChange={(e) => setNewEmployee({...newEmployee, hourlyRate: parseFloat(e.target.value) || 31.25})}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                                            />
+                                        </div>
+                                        
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Overtime Days</label>
+                                            <input
+                                                type="number"
+                                                step="0.5"
+                                                value={newEmployee.overtimeDays}
+                                                onChange={(e) => setNewEmployee({...newEmployee, overtimeDays: parseFloat(e.target.value) || 0})}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                                            />
+                                        </div>
+                                        
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Regular Days</label>
+                                            <input
+                                                type="number"
+                                                step="0.5"
+                                                value={newEmployee.regularDays}
+                                                onChange={(e) => setNewEmployee({...newEmployee, regularDays: parseFloat(e.target.value) || 0})}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                                            />
+                                        </div>
+                                        
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Overtime Hours</label>
+                                            <input
+                                                type="number"
+                                                step="0.5"
+                                                value={newEmployee.overtimeHours}
+                                                onChange={(e) => setNewEmployee({...newEmployee, overtimeHours: parseFloat(e.target.value) || 0})}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                                            />
+                                        </div>
+                                        
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Regular Hours</label>
+                                            <input
+                                                type="number"
+                                                step="0.5"
+                                                value={newEmployee.regularHours}
+                                                onChange={(e) => setNewEmployee({...newEmployee, regularHours: parseFloat(e.target.value) || 0})}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                                            />
+                                        </div>
+                                        
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Deduction (₹)</label>
+                                            <input
+                                                type="number"
+                                                step="0.01"
+                                                value={newEmployee.deduction}
+                                                onChange={(e) => setNewEmployee({...newEmployee, deduction: parseFloat(e.target.value) || 0})}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                                            />
+                                        </div>
+                                        
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Advance (₹)</label>
+                                            <input
+                                                type="number"
+                                                step="0.01"
+                                                value={newEmployee.advance}
+                                                onChange={(e) => setNewEmployee({...newEmployee, advance: parseFloat(e.target.value) || 0})}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                                            />
+                                        </div>
+                                        
+                                        <div>
+                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Salary Paid (₹)</label>
+                                            <input
+                                                type="number"
+                                                step="0.01"
+                                                value={newEmployee.salaryPaid}
+                                                onChange={(e) => setNewEmployee({...newEmployee, salaryPaid: parseFloat(e.target.value) || 0})}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="flex gap-3 mt-6">
+                                        <button
+                                            onClick={handleAddEmployee}
+                                            disabled={!newEmployee.name}
+                                            className="flex-1 bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition disabled:bg-gray-400"
+                                        >
+                                            Add Employee
+                                        </button>
+                                        <button
+                                            onClick={() => setShowAddForm(false)}
+                                            className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-400 transition"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Employee Detail/Edit Modal */}
+                    {selectedEmployee && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 no-print overflow-y-auto">
+                            <div className="bg-white rounded-2xl max-w-2xl w-full my-8">
+                                <div className={`bg-gradient-to-r ${selectedEmployee.department === 'Ladies' ? 'from-pink-600 to-purple-600' : 'from-blue-600 to-emerald-600'} text-white p-6 rounded-t-2xl`}>
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <h2 className="text-xl md:text-2xl font-bold">{selectedEmployee.name}</h2>
+                                            <p className="text-white/80 mt-1">Card No: {selectedEmployee.cardNo} | {selectedEmployee.department}</p>
+                                        </div>
+                                        <button
+                                            onClick={() => {
+                                                setSelectedEmployee(null);
+                                                setEditMode(false);
+                                            }}
+                                            className="text-white hover:text-gray-200 text-3xl leading-none"
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div className="p-6 max-h-[70vh] overflow-y-auto">
+                                    {editMode ? (
+                                        <EditEmployeeForm 
+                                            employee={selectedEmployee}
+                                            onSave={handleUpdateEmployee}
+                                            onCancel={() => setEditMode(false)}
+                                        />
+                                    ) : (
+                                        <EmployeeDetails employee={selectedEmployee} />
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        function EmployeeDetails({ employee }) {
+            return (
+                <>
+                    <div className="grid grid-cols-2 gap-4 mb-6">
+                        <div className="bg-blue-50 p-4 rounded-lg">
+                            <p className="text-sm text-gray-600 mb-1">Previous Due</p>
+                            <p className="text-xl font-bold text-gray-900">₹{parseFloat(employee.previousDue || 0).toFixed(2)}</p>
+                        </div>
+                        <div className="bg-green-50 p-4 rounded-lg">
+                            <p className="text-sm text-gray-600 mb-1">Hourly Rate</p>
+                            <p className="text-xl font-bold text-gray-900">₹{parseFloat(employee.hourlyRate || 0).toFixed(2)}</p>
+                        </div>
+                    </div>
+
+                    <div className="space-y-4">
+                        <h3 className="font-bold text-gray-800 text-lg border-b pb-2">Working Hours</h3>
+                        <div className="grid grid-cols-3 gap-3">
+                            <div className="bg-gray-50 p-3 rounded-lg">
+                                <p className="text-xs text-gray-600 mb-1">OT Days</p>
+                                <p className="text-lg font-semibold">{employee.overtimeDays || 0}</p>
+                            </div>
+                            <div className="bg-gray-50 p-3 rounded-lg">
+                                <p className="text-xs text-gray-600 mb-1">Regular</p>
+                                <p className="text-lg font-semibold">{employee.regularDays || 0}</p>
+                            </div>
+                            <div className="bg-gray-50 p-3 rounded-lg">
+                                <p className="text-xs text-gray-600 mb-1">Total</p>
+                                <p className="text-lg font-semibold">{employee.totalDays || 0}</p>
+                            </div>
+                        </div>
+
+                        <h3 className="font-bold text-gray-800 text-lg border-b pb-2 mt-6">Payment Breakdown</h3>
+                        <div className="space-y-2">
+                            <div className="flex justify-between py-2 border-b">
+                                <span className="text-gray-600">Overtime Pay:</span>
+                                <span className="font-semibold">₹{parseFloat(employee.overtimePay || 0).toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between py-2 border-b">
+                                <span className="text-gray-600">Regular Pay:</span>
+                                <span className="font-semibold">₹{parseFloat(employee.regularPay || 0).toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between py-2 border-b">
+                                <span className="text-gray-600">Deduction:</span>
+                                <span className="font-semibold text-red-600">-₹{parseFloat(employee.deduction || 0).toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between py-2 border-b">
+                                <span className="text-gray-600">Advance:</span>
+                                <span className="font-semibold text-red-600">-₹{parseFloat(employee.advance || 0).toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between py-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg px-4 mt-2">
+                                <span className="font-bold text-gray-800">Total Salary:</span>
+                                <span className="font-bold text-xl text-purple-600">₹{parseFloat(employee.totalSalary || 0).toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between py-2 border-b">
+                                <span className="text-gray-600">Salary Paid:</span>
+                                <span className="font-semibold text-green-600">₹{parseFloat(employee.salaryPaid || 0).toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between py-3 bg-orange-50 rounded-lg px-4">
+                                <span className="font-bold text-gray-800">Due Next Month:</span>
+                                <span className="font-bold text-xl text-orange-600">₹{parseFloat(employee.dueNextMonth || 0).toFixed(2)}</span>
+                            </div>
+                        </div>
+                    </div>
+                </>
+            );
+        }
+
+        function EditEmployeeForm({ employee, onSave, onCancel }) {
+            const [editedEmployee, setEditedEmployee] = useState({...employee});
+
+            const handleSave = () => {
+                if (editedEmployee.name) {
+                    onSave(editedEmployee);
                 }
-            });
-            
-            listHTML += '</div>';
-            selectedList.innerHTML = listHTML;
-            totalAmount.value = `₹${total.toFixed(2)}`;
-            
-            // Generate reference number
-            document.getElementById('referenceNumber').value = 'REF' + Date.now().toString().slice(-8);
+            };
+
+            return (
+                <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Card No</label>
+                            <input
+                                type="text"
+                                value={editedEmployee.cardNo}
+                                onChange={(e) => setEditedEmployee({...editedEmployee, cardNo: e.target.value})}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                            />
+                        </div>
+                        
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Name *</label>
+                            <input
+                                type="text"
+                                value={editedEmployee.name}
+                                onChange={(e) => setEditedEmployee({...editedEmployee, name: e.target.value})}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                                required
+                            />
+                        </div>
+                        
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Previous Due (₹)</label>
+                            <input
+                                type="number"
+                                step="0.01"
+                                value={editedEmployee.previousDue}
+                                onChange={(e) => setEditedEmployee({...editedEmployee, previousDue: parseFloat(e.target.value) || 0})}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                            />
+                        </div>
+                        
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Hourly Rate (₹)</label>
+                            <input
+                                type="number"
+                                step="0.01"
+                                value={editedEmployee.hourlyRate}
+                                onChange={(e) => setEditedEmployee({...editedEmployee, hourlyRate: parseFloat(e.target.value) || 31.25})}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                            />
+                        </div>
+                        
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Overtime Days</label>
+                            <input
+                                type="number"
+                                step="0.5"
+                                value={editedEmployee.overtimeDays}
+                                onChange={(e) => setEditedEmployee({...editedEmployee, overtimeDays: parseFloat(e.target.value) || 0})}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                            />
+                        </div>
+                        
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Regular Days</label>
+                            <input
+                                type="number"
+                                step="0.5"
+                                value={editedEmployee.regularDays}
+                                onChange={(e) => setEditedEmployee({...editedEmployee, regularDays: parseFloat(e.target.value) || 0})}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                            />
+                        </div>
+                        
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Overtime Hours</label>
+                            <input
+                                type="number"
+                                step="0.5"
+                                value={editedEmployee.overtimeHours}
+                                onChange={(e) => setEditedEmployee({...editedEmployee, overtimeHours: parseFloat(e.target.value) || 0})}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                            />
+                        </div>
+                        
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Regular Hours</label>
+                            <input
+                                type="number"
+                                step="0.5"
+                                value={editedEmployee.regularHours}
+                                onChange={(e) => setEditedEmployee({...editedEmployee, regularHours: parseFloat(e.target.value) || 0})}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                            />
+                        </div>
+                        
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Deduction (₹)</label>
+                            <input
+                                type="number"
+                                step="0.01"
+                                value={editedEmployee.deduction}
+                                onChange={(e) => setEditedEmployee({...editedEmployee, deduction: parseFloat(e.target.value) || 0})}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                            />
+                        </div>
+                        
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Advance (₹)</label>
+                            <input
+                                type="number"
+                                step="0.01"
+                                value={editedEmployee.advance}
+                                onChange={(e) => setEditedEmployee({...editedEmployee, advance: parseFloat(e.target.value) || 0})}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                            />
+                        </div>
+                        
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Salary Paid (₹)</label>
+                            <input
+                                type="number"
+                                step="0.01"
+                                value={editedEmployee.salaryPaid}
+                                onChange={(e) => setEditedEmployee({...editedEmployee, salaryPaid: parseFloat(e.target.value) || 0})}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="flex gap-3 mt-6">
+                        <button
+                            onClick={handleSave}
+                            disabled={!editedEmployee.name}
+                            className="flex-1 bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition disabled:bg-gray-400"
+                        >
+                            Save Changes
+                        </button>
+                        <button
+                            onClick={onCancel}
+                            className="flex-1 bg-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-400 transition"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            );
         }
 
-        function processPayment() {
-            if (selectedEmployees.length === 0) {
-                showToast('Please select employees to process payment', 'error');
-                return;
-            }
-            
-            const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
-            const paymentDate = document.getElementById('paymentDate').value;
-            const reference = document.getElementById('referenceNumber').value;
-            
-            // In a real application, you would save this to database
-            showToast(`Payment processed for ${selectedEmployees.length} employees. Reference: ${reference}`);
-            
-            // Reset form
-            clearPaymentForm();
-            
-            // Navigate back to salary calculator
-            navigateTo('salary-calculator');
-        }
-
-        function clearPaymentForm() {
-            document.querySelector('input[name="paymentMethod"][value="cash"]').checked = true;
-            document.getElementById('paymentDate').value = new Date().toISOString().split('T')[0];
-            document.getElementById('referenceNumber').value = 'REF' + Date.now().toString().slice(-8);
-            document.getElementById('selectedEmployeesList').innerHTML = '<p class="text-center text-gray">No employees selected</p>';
-            document.getElementById('totalPaymentAmount').value = '₹0';
-        }
-
-        // Report functions
-        function generateReport() {
-            const fromDate = document.getElementById('reportFrom').value;
-            const toDate = document.getElementById('reportTo').value;
-            const reportType = document.getElementById('reportType').value;
-            
-            let reportHTML = '<h3>Salary Report</h3>';
-            reportHTML += `<p>Period: ${fromDate} to ${toDate}</p>`;
-            
-            if (reportType === 'summary') {
-                reportHTML += generateSummaryReport();
-            } else if (reportType === 'detailed') {
-                reportHTML += generateDetailedReport();
-            } else if (reportType === 'department') {
-                reportHTML += generateDepartmentReport();
-            }
-            
-            document.getElementById('reportOutput').innerHTML = reportHTML;
-        }
-
-        function generateSummaryReport() {
-            let html = '<table class="w-100"><thead><tr><th>Department</th><th>Employees</th><th>Total Salary</th><th>Avg Salary</th></tr></thead><tbody>';
-            
-            const deptData = {};
-            employees.forEach(emp => {
-                if (!deptData[emp.department]) {
-                    deptData[emp.department] = { count: 0, total: 0 };
-                }
-                deptData[emp.department].count++;
-                
-                const salary = salaryData.find(s => s.employeeId === emp.id);
-                if (salary) {
-                    deptData[emp.department].total += salary.total;
-                }
-            });
-            
-            Object.entries(deptData).forEach(([dept, data]) => {
-                const avg = data.total / data.count;
-                html += `<tr><td>${dept}</td><td>${data.count}</td><td>₹${data.total.toFixed(2)}</td><td>₹${avg.toFixed(2)}</td></tr>`;
-            });
-            
-            html += '</tbody></table>';
-            return html;
-        }
-
-        // Export functions
-        function exportData() {
-            showToast('Export functionality would be implemented here', 'warning');
-        }
-
-        function downloadTemplate() {
-            showToast('Template download would be implemented here', 'warning');
-        }
-
-        function printPayslip(employeeId) {
-            showToast('Print functionality would be implemented here', 'warning');
-        }
-
-        function generatePayslips() {
-            if (selectedEmployees.length === 0) {
-                showToast('Please select employees to generate payslips', 'error');
-                return;
-            }
-            showToast(`Generating payslips for ${selectedEmployees.length} employees`, 'success');
-        }
-
-        // Settings functions
-        function saveSettings() {
-            showToast('Settings saved successfully!');
-        }
-
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', function() {
-            // Load data from localStorage
-            loadFromLocalStorage();
-            
-            // Initialize dashboard
-            navigateTo('dashboard');
-            
-            // Close modals when clicking outside
-            window.addEventListener('click', function(e) {
-                if (e.target.classList.contains('modal')) {
-                    e.target.classList.remove('active');
-                }
-            });
-            
-            // Close sidebar when clicking on link
-            document.querySelectorAll('.sidebar-item').forEach(item => {
-                item.addEventListener('click', function() {
-                    if (window.innerWidth <= 768) {
-                        document.getElementById('sidebar').classList.remove('active');
-                    }
-                });
-            });
-            
-            // Set today's date in forms
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('attendanceDate').value = today;
-            document.getElementById('paymentDate').value = today;
-            document.getElementById('joinDate').value = today;
-            
-            // Generate initial reference number
-            document.getElementById('referenceNumber').value = 'REF' + Date.now().toString().slice(-8);
-        });
+        ReactDOM.render(<SalaryApp />, document.getElementById('root'));
     </script>
 </body>
 </html>
